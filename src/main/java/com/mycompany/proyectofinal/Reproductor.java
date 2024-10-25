@@ -1,29 +1,44 @@
 
 package com.mycompany.proyectofinal;
 
-import uk.co.caprica.vlcj.player.component.AudioPlayerComponent;
+import javax.swing.JComponent;
+import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 
 /**
  *
  * @author Pablo
  */
 public class Reproductor {
-    private AudioPlayerComponent player;
+    private EmbeddedMediaPlayerComponent mediaPlayerComponent;
+    private boolean isPaused = false; // estado para controlar la pausa
 
     public Reproductor() {
-        player = new AudioPlayerComponent();
+        mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
     }
     
-    //Método para reproducir un archivo de audio
-    public void reproducirArchivo(String rutaArchivo){
-        player.mediaPlayer().media().play(rutaArchivo);
+    //Método para reproducir un archivo de audio o reanudar
+    public void reproducir(String archivo){
+        if (isPaused){
+            mediaPlayerComponent.mediaPlayer().controls().play(); // reanudar
+            isPaused = false;
+        } else {
+            mediaPlayerComponent.mediaPlayer().media().play(archivo); //reproducir desde el inicio
+            isPaused = false;
+        }
     }
     
-    public void pausarArchivo(){
-        player.mediaPlayer().controls().pause();
+    public void pausar(){
+        mediaPlayerComponent.mediaPlayer().controls().pause();
+        isPaused = true;
     }
     
-    public void detenerArchivo(){
-        player.mediaPlayer().controls().stop();
+    public void detener(){
+        mediaPlayerComponent.mediaPlayer().controls().stop();
+        isPaused = false;
+    }
+    
+    //Método para obtener el componente de reproduccion para integrar a la interfaz
+    public JComponent getMediaPlayerComponent(){
+        return mediaPlayerComponent;
     }
 }

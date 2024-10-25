@@ -53,6 +53,7 @@ public class Interfaz extends JFrame{
         colocarFileChooser();
         colocarBotones();
         colocarTabla();
+        panel.add(reproductor.getMediaPlayerComponent());
         busqueda = new Busqueda(tablaArchivos);
         agregarEventos();
         buscarArchivosRutaPredefinida();
@@ -144,10 +145,26 @@ public class Interfaz extends JFrame{
                 int filaSeleccionada = tablaArchivos.getSelectedRow(); // obtener la fila seleccionada de la tabla
                 if (filaSeleccionada != -1){ //verificar si hay una fila seleccionada
                     String rutaArchivo = (String) tablaArchivos.getValueAt(filaSeleccionada, 8);
-                    reproductor.reproducirArchivo(rutaArchivo);
+                    reproductor.reproducir(rutaArchivo);
                 } else {
                     JOptionPane.showMessageDialog(null, "Selecciona un archivo para reproducir");
                 }
+            }
+        });
+        
+        //evento para el boton de pausa
+        btnPausa.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reproductor.pausar();
+            }
+        });
+        
+        // Evento para el boton de detener
+        btnDetener.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reproductor.detener();
             }
         });
     }
