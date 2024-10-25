@@ -32,6 +32,7 @@ public class Interfaz extends JFrame{
     private Rutas rutas;
     private Busqueda busqueda;
     private Reproductor reproductor;
+    private JLabel lblEspacioArchivos;
     
     //Constructor
     public Interfaz(){
@@ -53,6 +54,7 @@ public class Interfaz extends JFrame{
         colocarFileChooser();
         colocarBotones();
         colocarTabla();
+        colocarEtiquetaEspacioTotal();
         panel.add(reproductor.getMediaPlayerComponent());
         busqueda = new Busqueda(tablaArchivos);
         agregarEventos();
@@ -130,11 +132,16 @@ public class Interfaz extends JFrame{
             fileChooser.setCurrentDirectory(new File(rutaPredefinida)); // Se establece la carpeta por defecto
             ctRuta.setText(rutaPredefinida); // MOstrar la ruta en la caja de texto del panel
         }
-        
+    }
+    
+    private void colocarEtiquetaEspacioTotal(){
+        lblEspacioArchivos = new JLabel("Espacio total ocupado: 0 MB");
+        lblEspacioArchivos.setBounds(35, 360, 300, 20);
+        panel.add(lblEspacioArchivos);
     }
     
     private void agregarEventos(){
-        Eventos eventos = new Eventos(fileChooser, ctRuta, busqueda, rutas);
+        Eventos eventos = new Eventos(fileChooser, ctRuta, busqueda, rutas, lblEspacioArchivos);
         //Agregar evento del botón
         btnBuscarCarpeta.addActionListener(eventos);
         
@@ -174,8 +181,15 @@ public class Interfaz extends JFrame{
         if (rutaPredefinida != null){
             File carpeta = new File(rutaPredefinida);
             if (carpeta.exists() && carpeta.isDirectory()){
-                busqueda.buscarArchivosRaiz(carpeta);
+                vaciarTabla();
+                long espacioTotal = busqueda.buscarArchivosRaiz(carpeta);
+                lblEspacioArchivos.setText("Espacio total ocupado: " + (espacioTotal / (1024 * 1024)) + " MB");
             }
         }
+    }
+    
+    private void vaciarTabla(){
+        DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
+        modelo.setRowCount(0);
     }
 }
