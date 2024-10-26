@@ -2,6 +2,14 @@
 package com.mycompany.proyectofinal;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -44,5 +52,56 @@ public class Busqueda {
             }
         }
         return espacioTotal;
+    }
+    
+    public List<File> buscarDuplicados() {
+        Map<String, List<File>> archivosMap = new HashMap<>();
+        List<File> archivosDuplicados = new ArrayList<>();
+
+        // Recorrer la tabla y calcular el hash de cada archivo
+        DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            String rutaArchivo = (String) modelo.getValueAt(i, 8);   // Columna de ruta
+            File archivo = new File(rutaArchivo);
+
+            // Obtener el hash del archivo
+            try {
+                String hash = calcularHash(archivo);
+
+                // Guardar el archivo en el mapa según su hash
+                archivosMap.computeIfAbsent(hash, k -> new ArrayList<>()).add(archivo);
+            } catch (IOException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Identificar duplicados
+        for (List<File> archivos : archivosMap.values()) {
+            if (archivos.size() > 1) {
+                archivosDuplicados.addAll(archivos);
+            }
+        }
+
+        return archivosDuplicados;
+    }
+
+    // Método para calcular el hash MD5 del archivo
+    private String calcularHash(File archivo) throws IOException, NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        try (FileInputStream fis = new FileInputStream(archivo)) {
+            byte[] buffer = new byte[1024];
+            int bytesLeidos;
+            while ((bytesLeidos = fis.read(buffer)) != -1) {
+                md.update(buffer, 0, bytesLeidos);
+            }
+        }
+        byte[] digest = md.digest();
+
+        // Convertir el hash a una cadena hexadecimal
+        StringBuilder sb = new StringBuilder();
+        for (byte b : digest) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 }

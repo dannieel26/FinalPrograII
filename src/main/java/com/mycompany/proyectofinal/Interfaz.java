@@ -5,7 +5,9 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,6 +29,7 @@ public class Interfaz extends JFrame{
     private JTextField ctRuta;
     private JButton btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnBuscar,btnCrearPlaylist,btnVerLetra;
     private JTable tablaArchivos;
+    private JComboBox<String> opcionesComboBox;
     private JScrollPane scrollTabla;
     private JFileChooser fileChooser;
     private Rutas rutas;
@@ -36,7 +39,7 @@ public class Interfaz extends JFrame{
     
     //Constructor
     public Interfaz(){
-        this.setSize(900, 500);
+        this.setSize(980, 500);
         setTitle("Administrador multimedia");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -55,9 +58,11 @@ public class Interfaz extends JFrame{
         colocarBotones();
         colocarTabla();
         colocarEtiquetaEspacioTotal();
+        colocarComboBox();
         panel.add(reproductor.getMediaPlayerComponent());
         busqueda = new Busqueda(tablaArchivos);
         agregarEventos();
+        agregarEventosComboBox();
         buscarArchivosRutaPredefinida();
     }
     
@@ -119,7 +124,7 @@ public class Interfaz extends JFrame{
         tablaArchivos = new JTable(modeloTabla);
         
         scrollTabla = new JScrollPane (tablaArchivos);
-        scrollTabla.setBounds(35, 120, 815, 240);
+        scrollTabla.setBounds(35, 120, 895, 240);
         panel.add(scrollTabla);
     }
     
@@ -138,6 +143,14 @@ public class Interfaz extends JFrame{
         lblEspacioArchivos = new JLabel("Espacio total ocupado: 0 MB");
         lblEspacioArchivos.setBounds(35, 360, 300, 20);
         panel.add(lblEspacioArchivos);
+    }
+    
+    private void colocarComboBox(){
+        opcionesComboBox = new JComboBox<>();
+        opcionesComboBox.addItem("Seleccionar opción");
+        opcionesComboBox.addItem("Mostrar duplicados");
+        opcionesComboBox.setBounds(810, 395, 140, 30);
+        panel.add(opcionesComboBox);
     }
     
     private void agregarEventos(){
@@ -174,6 +187,42 @@ public class Interfaz extends JFrame{
                 reproductor.detener();
             }
         });
+    }
+    
+    private void agregarEventosComboBox(){
+        opcionesComboBox.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String opcionSeleccionada = (String) opcionesComboBox.getSelectedItem();
+                if ("Mostrar duplicados".equals(opcionSeleccionada)){
+                    mostrarDuplicados();
+                }
+            }
+            
+        });
+    }
+    
+    private void mostrarDuplicados(){
+        java.util.List<File> archivosDuplicados = busqueda.buscarDuplicados();
+        
+        if (archivosDuplicados.isEmpty()){
+            JOptionPane.showMessageDialog(null, "No se encontraron archivos duplicados");
+        } else {
+            vaciarTabla(); //limpiar la tabla antes de mostrar los duplicados
+            long espacioTotalDuplicados = 0;
+            DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
+            for (File archivo : archivosDuplicados){
+                espacioTotalDuplicados += archivo.length();
+                modelo.addRow(new Object[]{
+                    archivo.getName(), "","","","","",
+                    archivo.length() / (1024 * 1024) + " MB",
+                    archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),archivo.getAbsolutePath()
+                });
+            }
+            
+            //Actualizar el label para mostrar el espacio ocupado por duplicados
+            lblEspacioArchivos.setText("Duplicados: " + archivosDuplicados.size() + " | Espacio ocupado: " + espacioTotalDuplicados / (1024 * 1024) + " MB");
+        }
     }
     
     private void buscarArchivosRutaPredefinida(){
