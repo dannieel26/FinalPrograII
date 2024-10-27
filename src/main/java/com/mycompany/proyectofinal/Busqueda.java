@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
 
 /**
  *
@@ -33,6 +37,65 @@ public class Busqueda {
         return buscarArchivos(carpeta);
     }
     
+    public String obtenerArtista(String rutaArchivo){
+        try {
+            AudioFile archivoAudio = AudioFileIO.read(new File(rutaArchivo));
+            Tag etiqueta = archivoAudio.getTag();
+            return etiqueta.getFirst(FieldKey.ARTIST);
+        } catch (Exception e){
+            e.printStackTrace();
+            return "Desconocido";
+        }
+    }
+    
+    public String obtenerAlbum(String rutaArchivo){
+        try {
+            AudioFile archivoAudio = AudioFileIO.read(new File(rutaArchivo));
+            Tag etiqueta = archivoAudio.getTag();
+            return etiqueta.getFirst(FieldKey.ALBUM);
+        } catch (Exception e){
+            e.printStackTrace();
+            return "Desconocido";
+        }
+    }
+    
+    public String obtenerGenero(String rutaArchivo){
+        try {
+            AudioFile archivoAudio = AudioFileIO.read(new File(rutaArchivo));
+            Tag etiqueta = archivoAudio.getTag();
+            return etiqueta.getFirst(FieldKey.GENRE);
+        } catch (Exception e){
+            e.printStackTrace();
+            return "Desconocido";
+        }
+    }
+    
+    public String obtenerAño(String rutaArchivo){
+        try {
+            AudioFile archivoAudio = AudioFileIO.read(new File(rutaArchivo));
+            Tag etiqueta = archivoAudio.getTag();
+            return etiqueta.getFirst(FieldKey.YEAR);
+        } catch (Exception e){
+            e.printStackTrace();
+            return "Desconocido";
+        }
+    }
+    
+    public String obtenerDuracion(String rutaArchivo){
+        try {
+            AudioFile archivoAudio = AudioFileIO.read(new File(rutaArchivo));
+            int duracionSegundos = archivoAudio.getAudioHeader().getTrackLength();
+            
+            int minutos = duracionSegundos / 60;
+            int segundos = duracionSegundos & 60;
+            
+            return String.format("%d:%02d", minutos, segundos);
+        } catch (Exception e){
+            e.printStackTrace();
+            return "00:00";
+        }
+    }
+    
     //Método recursivo para archivos en carpetas y subcarpetas
     private long buscarArchivos(File carpeta){
         long espacioTotal = 0;
@@ -46,7 +109,15 @@ public class Busqueda {
                     espacioTotal += tamañoArchivo;
                     //Agregar los archivos de música a ala tabla
                     ((DefaultTableModel) tablaArchivos.getModel()).addRow(new Object[]{
-                        archivo.getName(),"","","","","",archivo.length(), archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),archivo.getAbsolutePath()
+                        archivo.getName(),
+                        obtenerArtista(archivo.getAbsolutePath()),
+                        obtenerAlbum(archivo.getAbsolutePath()),
+                        obtenerGenero(archivo.getAbsolutePath()),
+                        obtenerAño(archivo.getAbsolutePath()),
+                        obtenerDuracion(archivo.getAbsolutePath()),
+                        archivo.length() / (1024 * 1024) + " MB",
+                        archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),
+                        archivo.getAbsolutePath()
                     });
                 }
             }

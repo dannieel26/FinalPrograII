@@ -1,11 +1,11 @@
 
 package com.mycompany.proyectofinal;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -46,6 +46,7 @@ public class Interfaz extends JFrame{
         
         rutas = new Rutas();
         reproductor = new Reproductor();
+        reproductor.getMediaPlayerComponent().setBounds(950, 100, 400, 400);
         iniciarComponentes();
     }
     
@@ -59,8 +60,10 @@ public class Interfaz extends JFrame{
         colocarTabla();
         colocarEtiquetaEspacioTotal();
         colocarComboBox();
-        panel.add(reproductor.getMediaPlayerComponent());
+        
         busqueda = new Busqueda(tablaArchivos);
+        
+        panel.add(reproductor.getMediaPlayerComponent());
         agregarEventos();
         agregarEventosComboBox();
         buscarArchivosRutaPredefinida();
@@ -70,6 +73,7 @@ public class Interfaz extends JFrame{
     private void colocarPanel(){
         panel = new JPanel();
         panel.setLayout(null);
+        panel.setBackground(Color.gray);
         this.getContentPane().add(panel);
     }
     
@@ -149,6 +153,9 @@ public class Interfaz extends JFrame{
         opcionesComboBox = new JComboBox<>();
         opcionesComboBox.addItem("Seleccionar opción");
         opcionesComboBox.addItem("Mostrar duplicados");
+        opcionesComboBox.addItem("Ver más grandes");
+        opcionesComboBox.addItem("Eliminar archivo(s)");
+        opcionesComboBox.addItem("Mover archivo(s)");
         opcionesComboBox.setBounds(810, 395, 140, 30);
         panel.add(opcionesComboBox);
     }
