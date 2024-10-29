@@ -222,9 +222,7 @@ public class Interfaz extends JFrame{
             DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
             for (File archivo : archivosDuplicados){
                 espacioTotalDuplicados += archivo.length();
-                modelo.addRow(new Object[]{
-                    
-                });
+                busqueda.agregarMetadatosTabla(archivo, modelo);
             }
             
             //Actualizar el label para mostrar el espacio ocupado por duplicados

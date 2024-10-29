@@ -29,7 +29,20 @@ public class Busqueda {
         this.tablaArchivos = tablaArchivos;
     }
     
-    
+    //Método para colocar los metadatos de la musica en la tabla
+    public void agregarMetadatosTabla(File archivo, DefaultTableModel modeloTabla){
+        modeloTabla.addRow(new Object[]{
+            archivo.getName(),
+            obtenerArtista(archivo.getAbsolutePath()),
+            obtenerAlbum(archivo.getAbsolutePath()),
+            obtenerGenero(archivo.getAbsolutePath()),
+            obtenerAño(archivo.getAbsolutePath()),
+            obtenerDuracion(archivo.getAbsolutePath()),
+            archivo.length() / (1024 * 1024) + " MB",
+            archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),
+            archivo.getAbsolutePath()
+        });
+    }
     
     //Método para limpiar todo una vez al buscar una nueva carpeta
     public long buscarArchivosRaiz(File carpeta){
