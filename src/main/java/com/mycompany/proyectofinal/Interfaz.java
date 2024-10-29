@@ -203,6 +203,8 @@ public class Interfaz extends JFrame{
                 String opcionSeleccionada = (String) opcionesComboBox.getSelectedItem();
                 if ("Mostrar duplicados".equals(opcionSeleccionada)){
                     mostrarDuplicados();
+                } else if ("Eliminar archivo(s)".equals(opcionSeleccionada)){
+                    eliminarArchivoSeleccionado();
                 }
             }
             
@@ -221,14 +223,31 @@ public class Interfaz extends JFrame{
             for (File archivo : archivosDuplicados){
                 espacioTotalDuplicados += archivo.length();
                 modelo.addRow(new Object[]{
-                    archivo.getName(), "","","","","",
-                    archivo.length() / (1024 * 1024) + " MB",
-                    archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),archivo.getAbsolutePath()
+                    
                 });
             }
             
             //Actualizar el label para mostrar el espacio ocupado por duplicados
             lblEspacioArchivos.setText("Duplicados: " + archivosDuplicados.size() + " | Espacio ocupado: " + espacioTotalDuplicados / (1024 * 1024) + " MB");
+        }
+    }
+    
+    private void eliminarArchivoSeleccionado(){
+        int filaSeleccionada = tablaArchivos.getSelectedRow();
+        if (filaSeleccionada != -1){
+            String rutaArchivo = (String) (tablaArchivos.getValueAt(filaSeleccionada, 8));
+            File archivo = new File(rutaArchivo);
+            int confirmacion = JOptionPane.showConfirmDialog(null, "¿Desea eliminar " + archivo.getName() + "?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if (confirmacion == JOptionPane.YES_OPTION){
+                if (archivo.delete()){
+                    ((DefaultTableModel) tablaArchivos.getModel()).removeRow(filaSeleccionada);
+                    JOptionPane.showMessageDialog(null, "Archivo eliminado con éxito");
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se pudo eliminar el archivo");
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Selecciona un archivo para eliminar");
         }
     }
     

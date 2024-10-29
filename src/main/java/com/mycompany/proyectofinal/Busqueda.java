@@ -29,6 +29,8 @@ public class Busqueda {
         this.tablaArchivos = tablaArchivos;
     }
     
+    
+    
     //Método para limpiar todo una vez al buscar una nueva carpeta
     public long buscarArchivosRaiz(File carpeta){
         //Limpiar el contenido de anterior de la tabla
