@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import org.jaudiotagger.audio.AudioFile;
@@ -189,5 +190,25 @@ public class Busqueda {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
+    }
+    
+    public void mostrarArchivosMasGrandes(){
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+        List<File> archivosOrdenados = new ArrayList<>();
+        
+        //Recorrer la tabla
+        for (int i = 0; i < modeloTabla.getRowCount(); i++){
+            String rutaArchivo = (String) modeloTabla.getValueAt(i, 8);
+            archivosOrdenados.add(new File(rutaArchivo));
+        }
+        
+        //Ordenar los archivos por tamaño de mayor a menor
+        archivosOrdenados = archivosOrdenados.stream().sorted((a ,b) -> Long.compare(b.length(), a.length())).collect(Collectors.toList());
+        
+        //Limpiar la tabla y mostrar los archivos ordenados
+        modeloTabla.setRowCount(0);
+        for (File archivo : archivosOrdenados){
+            agregarMetadatosTabla(archivo, modeloTabla);
+        }
     }
 }

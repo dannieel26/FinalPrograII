@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -201,10 +203,12 @@ public class Interfaz extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String opcionSeleccionada = (String) opcionesComboBox.getSelectedItem();
-                if ("Mostrar duplicados".equals(opcionSeleccionada)){
-                    mostrarDuplicados();
-                } else if ("Eliminar archivo(s)".equals(opcionSeleccionada)){
-                    eliminarArchivoSeleccionado();
+                
+                switch (opcionSeleccionada){
+                    case "Mostrar duplicados" : mostrarDuplicados(); break;
+                    case "Ver más grandes" : busqueda.mostrarArchivosMasGrandes(); break;
+                    case "Eliminar archivo(s)" : eliminarArchivoSeleccionado(); break;
+                    default : JOptionPane.showMessageDialog(null, "Opción no reconocida");
                 }
             }
             
