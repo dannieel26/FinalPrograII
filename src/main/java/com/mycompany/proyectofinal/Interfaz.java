@@ -6,8 +6,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -29,7 +27,7 @@ public class Interfaz extends JFrame{
     //Atributos de la clase
     private JPanel panel;
     private JTextField ctRuta;
-    private JButton btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnBuscar,btnCrearPlaylist,btnVerLetra;
+    private JButton btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnBuscar,btnPlaylists,btnVerLetra;
     private JTable tablaArchivos;
     private JComboBox<String> opcionesComboBox;
     private JScrollPane scrollTabla;
@@ -115,9 +113,9 @@ public class Interfaz extends JFrame{
         btnBuscar.setBounds(425, 390, 110, 40);
         panel.add(btnBuscar);
         
-        btnCrearPlaylist = new JButton("Crear Playlist");
-        btnCrearPlaylist.setBounds(555, 390, 110, 40);
-        panel.add(btnCrearPlaylist);
+        btnPlaylists = new JButton("Playlists");
+        btnPlaylists.setBounds(555, 390, 110, 40);
+        panel.add(btnPlaylists);
         
         btnVerLetra = new JButton("Ver Letra");
         btnVerLetra.setBounds(685, 390, 110, 40);
@@ -196,6 +194,16 @@ public class Interfaz extends JFrame{
                 reproductor.detener();
             }
         });
+        
+        //Evento para abrir la ventana de playlist conn el boton
+        btnPlaylists.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VentanaPlaylist ventanaPlaylist = new VentanaPlaylist();
+                ventanaPlaylist.setVisible(true);
+            }
+        });
+        
     }
     
     private void agregarEventosComboBox(){
