@@ -218,6 +218,22 @@ public class Interfaz extends JFrame{
             }
             
         });
+        
+        comboBoxPlaylists.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String opcionSeleccionada2 = (String) comboBoxPlaylists.getSelectedItem();
+                switch (opcionSeleccionada2){
+                    case "Agregar a playlist" : String nombreArchivo = obtenerNombreArchivoSeleccionado();
+                                                if (nombreArchivo != null) {
+                                                VentanaPlaylist ventanaPlaylist = new VentanaPlaylist(nombreArchivo);
+                                                ventanaPlaylist.setVisible(true);
+                } break;
+                    case "Gestionar Playlists" : VentanaGestionarPlaylists v2 = new VentanaGestionarPlaylists(); v2.setVisible(true); break;
+                    default : break;
+                }
+            }
+        });
     }
     
     private void mostrarDuplicados(){
@@ -274,4 +290,14 @@ public class Interfaz extends JFrame{
         DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
         modelo.setRowCount(0);
     }
+    
+    public String obtenerNombreArchivoSeleccionado() {
+    int filaSeleccionada = tablaArchivos.getSelectedRow();
+    if (filaSeleccionada != -1) {
+        return (String) tablaArchivos.getValueAt(filaSeleccionada, 0); // Asume que el nombre está en la columna 0
+    } else {
+        JOptionPane.showMessageDialog(this, "No se ha seleccionado ningún archivo");
+        return null;
+    }
+}
 }
