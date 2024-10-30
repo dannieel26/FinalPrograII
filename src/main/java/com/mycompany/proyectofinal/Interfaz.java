@@ -29,7 +29,7 @@ public class Interfaz extends JFrame{
     private JTextField ctRuta;
     private JButton btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnBuscar,btnPlaylists,btnVerLetra;
     private JTable tablaArchivos;
-    private JComboBox<String> opcionesComboBox;
+    private JComboBox<String> opcionesComboBox, comboBoxPlaylists;
     private JScrollPane scrollTabla;
     private JFileChooser fileChooser;
     private Rutas rutas;
@@ -102,24 +102,20 @@ public class Interfaz extends JFrame{
         panel.add(btnReproducir);
         
         btnPausa = new JButton("Pausa");
-        btnPausa.setBounds(165, 390, 110, 40);
+        btnPausa.setBounds(160, 390, 110, 40);
         panel.add(btnPausa);
         
         btnDetener = new JButton("Detener");
-        btnDetener.setBounds(295, 390, 110, 40);
+        btnDetener.setBounds(285, 390, 110, 40);
         panel.add(btnDetener);
         
-        btnBuscar = new JButton("Buscar");
-        btnBuscar.setBounds(425, 390, 110, 40);
-        panel.add(btnBuscar);
-        
-        btnPlaylists = new JButton("Playlists");
-        btnPlaylists.setBounds(555, 390, 110, 40);
-        panel.add(btnPlaylists);
-        
-        btnVerLetra = new JButton("Ver Letra");
-        btnVerLetra.setBounds(685, 390, 110, 40);
+        btnVerLetra = new JButton("Ver letra");
+        btnVerLetra.setBounds(410, 390, 110, 40);
         panel.add(btnVerLetra);
+        
+        btnBuscar = new JButton("Buscar");
+        btnBuscar.setBounds(535, 390, 110, 40);
+        panel.add(btnBuscar);
     }
     
     private void colocarTabla(){
@@ -156,8 +152,16 @@ public class Interfaz extends JFrame{
         opcionesComboBox.addItem("Ver más grandes");
         opcionesComboBox.addItem("Eliminar archivo(s)");
         opcionesComboBox.addItem("Mover archivo(s)");
-        opcionesComboBox.setBounds(810, 395, 140, 30);
+        opcionesComboBox.setBounds(800, 390, 140, 40);
         panel.add(opcionesComboBox);
+        
+        comboBoxPlaylists = new JComboBox<>();
+        comboBoxPlaylists.addItem("Opciones Playlist");
+        comboBoxPlaylists.addItem("Agregar a playlist");
+        comboBoxPlaylists.addItem("Gestionar Playlists");
+        comboBoxPlaylists.setBounds(660,390,125,40);
+        panel.add(comboBoxPlaylists);
+        
     }
     
     private void agregarEventos(){
@@ -195,14 +199,7 @@ public class Interfaz extends JFrame{
             }
         });
         
-        //Evento para abrir la ventana de playlist conn el boton
-        btnPlaylists.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                VentanaPlaylist ventanaPlaylist = new VentanaPlaylist();
-                ventanaPlaylist.setVisible(true);
-            }
-        });
+        
         
     }
     
@@ -216,7 +213,7 @@ public class Interfaz extends JFrame{
                     case "Mostrar duplicados" : mostrarDuplicados(); break;
                     case "Ver más grandes" : busqueda.mostrarArchivosMasGrandes(); break;
                     case "Eliminar archivo(s)" : eliminarArchivoSeleccionado(); break;
-                    default : JOptionPane.showMessageDialog(null, "Opción no reconocida");
+                    default : break;
                 }
             }
             
