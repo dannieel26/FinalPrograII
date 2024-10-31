@@ -32,18 +32,25 @@ public class Busqueda {
     
     //Método para colocar los metadatos de la musica en la tabla
     public void agregarMetadatosTabla(File archivo, DefaultTableModel modeloTabla){
-        modeloTabla.addRow(new Object[]{
-            archivo.getName(),
-            obtenerArtista(archivo.getAbsolutePath()),
-            obtenerAlbum(archivo.getAbsolutePath()),
-            obtenerGenero(archivo.getAbsolutePath()),
-            obtenerAño(archivo.getAbsolutePath()),
-            obtenerDuracion(archivo.getAbsolutePath()),
-            archivo.length() / (1024 * 1024) + " MB",
-            archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),
-            archivo.getAbsolutePath()
-        });
-    }
+    String artista = obtenerArtista(archivo.getAbsolutePath());
+    String album = obtenerAlbum(archivo.getAbsolutePath());
+    String genero = obtenerGenero(archivo.getAbsolutePath());
+    String año = obtenerAño(archivo.getAbsolutePath());
+    String duracion = obtenerDuracion(archivo.getAbsolutePath());
+    
+    modeloTabla.addRow(new Object[]{
+        archivo.getName(),
+        artista,
+        album,
+        genero,
+        año,
+        duracion,
+        archivo.length() / (1024 * 1024) + " MB",
+        archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),
+        archivo.getAbsolutePath()
+    });
+}
+
     
     //Método para limpiar todo una vez al buscar una nueva carpeta
     public long buscarArchivosRaiz(File carpeta){
@@ -98,48 +105,43 @@ public class Busqueda {
     }
     
     public String obtenerDuracion(String rutaArchivo){
-        try {
-            AudioFile archivoAudio = AudioFileIO.read(new File(rutaArchivo));
-            int duracionSegundos = archivoAudio.getAudioHeader().getTrackLength();
-            
-            int minutos = duracionSegundos / 60;
-            int segundos = duracionSegundos & 60;
-            
-            return String.format("%d:%02d", minutos, segundos);
-        } catch (Exception e){
-            e.printStackTrace();
-            return "00:00";
+    try {
+        AudioFile archivoAudio = AudioFileIO.read(new File(rutaArchivo));
+        int duracionSegundos = archivoAudio.getAudioHeader().getTrackLength();
+        
+        int minutos = duracionSegundos / 60;
+        int segundos = duracionSegundos % 60; // Cambiar & a %
+        
+        return String.format("%d:%02d", minutos, segundos);
+    } catch (Exception e){
+        e.printStackTrace();
+        return "00:00";
         }
     }
+
     
-    //Método recursivo para archivos en carpetas y subcarpetas
     private long buscarArchivos(File carpeta){
-        long espacioTotal = 0;
-        File[] archivos = carpeta.listFiles();
-        if (archivos != null){
-            for (File archivo : archivos){
-                if(archivo.isDirectory()){
-                    espacioTotal += buscarArchivos(archivo); //acumula tamaño en subcarpetas
-                } else if (archivo.isFile() && archivo.getName().endsWith(".mp3") || archivo.getName().endsWith(".wma") || archivo.getName().endsWith(".mp4") || archivo.getName().endsWith(".flv")){
-                    long tamañoArchivo = archivo.length();
-                    espacioTotal += tamañoArchivo;
-                    //Agregar los archivos de música a ala tabla
-                    ((DefaultTableModel) tablaArchivos.getModel()).addRow(new Object[]{
-                        archivo.getName(),
-                        obtenerArtista(archivo.getAbsolutePath()),
-                        obtenerAlbum(archivo.getAbsolutePath()),
-                        obtenerGenero(archivo.getAbsolutePath()),
-                        obtenerAño(archivo.getAbsolutePath()),
-                        obtenerDuracion(archivo.getAbsolutePath()),
-                        archivo.length() / (1024 * 1024) + " MB",
-                        archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),
-                        archivo.getAbsolutePath()
-                    });
+    long espacioTotal = 0;
+    File[] archivos = carpeta.listFiles();
+    if (archivos != null){
+        for (File archivo : archivos){
+            if(archivo.isDirectory()){
+                espacioTotal += buscarArchivos(archivo); //acumula tamaño en subcarpetas
+            } else if (archivo.isFile() && 
+                       (archivo.getName().endsWith(".mp3") || 
+                        archivo.getName().endsWith(".wma") || 
+                        archivo.getName().endsWith(".mp4") || 
+                        archivo.getName().endsWith(".flv"))) {
+                long tamañoArchivo = archivo.length();
+                espacioTotal += tamañoArchivo;
+                //Agregar los archivos de música a la tabla
+                agregarMetadatosTabla(archivo, (DefaultTableModel) tablaArchivos.getModel());
                 }
             }
         }
         return espacioTotal;
     }
+
     
     public List<File> buscarDuplicados() {
         Map<String, List<File>> archivosMap = new HashMap<>();
@@ -193,22 +195,22 @@ public class Busqueda {
     }
     
     public void mostrarArchivosMasGrandes(){
-        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
-        List<File> archivosOrdenados = new ArrayList<>();
-        
-        //Recorrer la tabla
-        for (int i = 0; i < modeloTabla.getRowCount(); i++){
-            String rutaArchivo = (String) modeloTabla.getValueAt(i, 8);
-            archivosOrdenados.add(new File(rutaArchivo));
-        }
-        
-        //Ordenar los archivos por tamaño de mayor a menor
-        archivosOrdenados = archivosOrdenados.stream().sorted((a ,b) -> Long.compare(b.length(), a.length())).collect(Collectors.toList());
-        
-        //Limpiar la tabla y mostrar los archivos ordenados
-        modeloTabla.setRowCount(0);
-        for (File archivo : archivosOrdenados){
-            agregarMetadatosTabla(archivo, modeloTabla);
+    DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+    List<File> archivosOrdenados = new ArrayList<>();
+    
+    //Recorrer la tabla
+    for (int i = 0; i < modeloTabla.getRowCount(); i++){
+        String rutaArchivo = (String) modeloTabla.getValueAt(i, 8);
+        archivosOrdenados.add(new File(rutaArchivo));
+    }
+    
+    //Ordenar los archivos por tamaño de mayor a menor
+    archivosOrdenados = archivosOrdenados.stream().sorted((a ,b) -> Long.compare(b.length(), a.length())).collect(Collectors.toList());
+    
+    //Limpiar la tabla y mostrar los archivos ordenados
+    modeloTabla.setRowCount(0);
+    for (File archivo : archivosOrdenados){
+        agregarMetadatosTabla(archivo, modeloTabla);
         }
     }
 }

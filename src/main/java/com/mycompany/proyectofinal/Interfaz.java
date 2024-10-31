@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -225,15 +226,54 @@ public class Interfaz extends JFrame{
                 String opcionSeleccionada2 = (String) comboBoxPlaylists.getSelectedItem();
                 switch (opcionSeleccionada2){
                     case "Agregar a playlist" : String nombreArchivo = obtenerNombreArchivoSeleccionado();
+                                                String rutaArchivo = obtenerRutaArchivoSeleccionado();
                                                 if (nombreArchivo != null) {
-                                                VentanaPlaylist ventanaPlaylist = new VentanaPlaylist(nombreArchivo);
+                                                VentanaPlaylist ventanaPlaylist = new VentanaPlaylist(nombreArchivo, rutaArchivo);
                                                 ventanaPlaylist.setVisible(true);
-                } break;
-                    case "Gestionar Playlists" : VentanaGestionarPlaylists v2 = new VentanaGestionarPlaylists(); v2.setVisible(true); break;
+                                                } break;
+                    case "Gestionar Playlists" : VentanaGestionarPlaylists v2 = new VentanaGestionarPlaylists(Interfaz.this); v2.setVisible(true); break;
                     default : break;
                 }
             }
         });
+    }
+    
+    // Método para mostrar las canciones de una playlist en la tabla
+    public void mostrarPlaylistEnTabla(List<File> cancionesPlaylist) {
+        vaciarTabla();  // Limpiar la tabla antes de mostrar la playlist
+        lblEspacioArchivos.setText("");
+        DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
+        for (File cancion : cancionesPlaylist) {
+            busqueda.agregarMetadatosTabla(cancion, modelo);
+        }
+    }
+
+    // Método para obtener el nombre del archivo seleccionado en la tabla
+    public String obtenerNombreArchivoSeleccionado() {
+        int filaSeleccionada = tablaArchivos.getSelectedRow();
+        if (filaSeleccionada != -1) {
+            return (String) tablaArchivos.getValueAt(filaSeleccionada, 0); // Asume que el nombre está en la columna 0
+        } else {
+            JOptionPane.showMessageDialog(this, "No se ha seleccionado ningún archivo");
+            return null;
+        }
+    }
+    
+    private String obtenerRutaArchivoSeleccionado(){
+        int filaSeleccionada = tablaArchivos.getSelectedRow();
+        if (filaSeleccionada != -1) {
+            return (String) tablaArchivos.getValueAt(filaSeleccionada, 8); // para recibir la ruta
+        } else {
+            return null;
+        }
+    }
+    
+    public void mostrarCancionesEnTabla(List<String> canciones) {
+    DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+    modeloTabla.setRowCount(0); // Limpiar la tabla antes de mostrar nuevas canciones
+    for (String cancion : canciones) {
+        modeloTabla.addRow(new Object[]{cancion});
+        }
     }
     
     private void mostrarDuplicados(){
@@ -290,14 +330,4 @@ public class Interfaz extends JFrame{
         DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
         modelo.setRowCount(0);
     }
-    
-    public String obtenerNombreArchivoSeleccionado() {
-    int filaSeleccionada = tablaArchivos.getSelectedRow();
-    if (filaSeleccionada != -1) {
-        return (String) tablaArchivos.getValueAt(filaSeleccionada, 0); // Asume que el nombre está en la columna 0
-    } else {
-        JOptionPane.showMessageDialog(this, "No se ha seleccionado ningún archivo");
-        return null;
-    }
-}
 }
