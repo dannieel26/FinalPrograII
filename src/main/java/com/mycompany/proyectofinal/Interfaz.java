@@ -30,7 +30,7 @@ public class Interfaz extends JFrame{
     private JTextField ctRuta;
     private JButton btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnBuscar,btnPlaylists,btnVerLetra;
     private JTable tablaArchivos;
-    private JComboBox<String> opcionesComboBox, comboBoxPlaylists;
+    private JComboBox<String> opcionesComboBox, comboBoxPlaylists, comboBoxBuscar;
     private JScrollPane scrollTabla;
     private JFileChooser fileChooser;
     private Rutas rutas;
@@ -113,10 +113,6 @@ public class Interfaz extends JFrame{
         btnVerLetra = new JButton("Ver letra");
         btnVerLetra.setBounds(410, 390, 110, 40);
         panel.add(btnVerLetra);
-        
-        btnBuscar = new JButton("Buscar");
-        btnBuscar.setBounds(535, 390, 110, 40);
-        panel.add(btnBuscar);
     }
     
     private void colocarTabla(){
@@ -163,6 +159,13 @@ public class Interfaz extends JFrame{
         comboBoxPlaylists.setBounds(660,390,125,40);
         panel.add(comboBoxPlaylists);
         
+        comboBoxBuscar = new JComboBox<>();
+        comboBoxBuscar.addItem("Buscar por...");
+        comboBoxBuscar.addItem("Canción");
+        comboBoxBuscar.addItem("Artista");
+        comboBoxBuscar.addItem("Álbum");
+        comboBoxBuscar.setBounds(535, 390, 110, 40);
+        panel.add(comboBoxBuscar);
     }
     
     private void agregarEventos(){
@@ -232,6 +235,19 @@ public class Interfaz extends JFrame{
                                                 ventanaPlaylist.setVisible(true);
                                                 } break;
                     case "Gestionar Playlists" : VentanaGestionarPlaylists v2 = new VentanaGestionarPlaylists(Interfaz.this); v2.setVisible(true); break;
+                    default : break;
+                }
+            }
+        });
+        
+        comboBoxBuscar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String opcionSeleccionada3 = (String) comboBoxBuscar.getSelectedItem();
+                switch (opcionSeleccionada3) {
+                    case "Canción" : String buscarCancion = JOptionPane.showInputDialog("Ingrese la cancion a buscar"); break;
+                    case "Artista" : String buscarArtista = JOptionPane.showInputDialog("Ingrese el artista a buscar"); break;
+                    case "Álbum" : String buscarÁlbum = JOptionPane.showInputDialog("Ingrese el álbum a buscar"); break;
                     default : break;
                 }
             }
