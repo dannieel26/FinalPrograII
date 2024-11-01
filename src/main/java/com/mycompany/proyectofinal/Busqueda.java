@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import org.jaudiotagger.audio.AudioFile;
@@ -30,27 +31,35 @@ public class Busqueda {
         this.tablaArchivos = tablaArchivos;
     }
     
-    //Método para colocar los metadatos de la musica en la tabla
-    public void agregarMetadatosTabla(File archivo, DefaultTableModel modeloTabla){
-    String artista = obtenerArtista(archivo.getAbsolutePath());
-    String album = obtenerAlbum(archivo.getAbsolutePath());
-    String genero = obtenerGenero(archivo.getAbsolutePath());
-    String año = obtenerAño(archivo.getAbsolutePath());
-    String duracion = obtenerDuracion(archivo.getAbsolutePath());
-    
-    modeloTabla.addRow(new Object[]{
-        archivo.getName(),
-        artista,
-        album,
-        genero,
-        año,
-        duracion,
-        archivo.length() / (1024 * 1024) + " MB",
-        archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),
-        archivo.getAbsolutePath()
-    });
-}
+    // Método para colocar los metadatos de la música en la tabla
+    public void agregarMetadatosTabla(File archivo, DefaultTableModel modeloTabla) {
+        String artista = "";
+        String album = "";
+        String genero = "";
+        String año = "";
+        String duracion = "";
 
+        // Verificar si el archivo es de tipo audio
+        if (archivo.getName().endsWith(".mp3") || archivo.getName().endsWith(".wma")) {
+            artista = obtenerArtista(archivo.getAbsolutePath());
+            album = obtenerAlbum(archivo.getAbsolutePath());
+            genero = obtenerGenero(archivo.getAbsolutePath());
+            año = obtenerAño(archivo.getAbsolutePath());
+            duracion = obtenerDuracion(archivo.getAbsolutePath());
+        }
+
+        modeloTabla.addRow(new Object[]{
+            archivo.getName(),
+            artista,
+            album,
+            genero,
+            año,
+            duracion,
+            archivo.length() / (1024 * 1024) + " MB",
+            archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),
+            archivo.getAbsolutePath()
+        });
+    }
     
     //Método para limpiar todo una vez al buscar una nueva carpeta
     public long buscarArchivosRaiz(File carpeta){
@@ -211,6 +220,33 @@ public class Busqueda {
     modeloTabla.setRowCount(0);
     for (File archivo : archivosOrdenados){
         agregarMetadatosTabla(archivo, modeloTabla);
+        }
+    }
+    
+    public void buscarEnTabla(String termino, int columna) {
+        if (termino == null || termino.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese un término de búsqueda válido.");
+            return;
+        }
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+        DefaultTableModel modeloFiltrado = new DefaultTableModel(new String[]{"Nombre", "Artista", "Album", "Genero", "Año", "Duracion", "Tamaño", "Extension", "Ruta"}, 0);
+
+        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+            String valor = (String) modeloTabla.getValueAt(i, columna);
+            if (valor != null && valor.toLowerCase().contains(termino.toLowerCase())) {
+                Object[] fila = new Object[modeloTabla.getColumnCount()];
+                for (int j = 0; j < modeloTabla.getColumnCount(); j++) {
+                    fila[j] = modeloTabla.getValueAt(i, j);
+                }
+                modeloFiltrado.addRow(fila);
+            }
+        }
+
+        if (modeloFiltrado.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(null, "No se encontraron resultados para la búsqueda");
+        } else {
+            tablaArchivos.setModel(modeloFiltrado);
         }
     }
 }

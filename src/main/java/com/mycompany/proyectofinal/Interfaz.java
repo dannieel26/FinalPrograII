@@ -3,8 +3,6 @@ package com.mycompany.proyectofinal;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 import javax.swing.JButton;
@@ -28,7 +26,7 @@ public class Interfaz extends JFrame{
     //Atributos de la clase
     private JPanel panel;
     private JTextField ctRuta;
-    private JButton btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnBuscar,btnPlaylists,btnVerLetra;
+    private JButton btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnVerLetra;
     private JTable tablaArchivos;
     private JComboBox<String> opcionesComboBox, comboBoxPlaylists, comboBoxBuscar;
     private JScrollPane scrollTabla;
@@ -173,126 +171,79 @@ public class Interfaz extends JFrame{
         Eventos eventos = new Eventos(fileChooser, ctRuta, busqueda, rutas, lblEspacioArchivos);
         //Agregar evento del botón
         btnBuscarCarpeta.addActionListener(eventos);
-        
-        //Evento para el boton reproducir
-        btnReproducir.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int filaSeleccionada = tablaArchivos.getSelectedRow(); // obtener la fila seleccionada de la tabla
-                if (filaSeleccionada != -1){ //verificar si hay una fila seleccionada
-                    String rutaArchivo = (String) tablaArchivos.getValueAt(filaSeleccionada, 8);
-                    reproductor.reproducir(rutaArchivo);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Selecciona un archivo para reproducir");
-                }
-            }
-        });
-        
-        //evento para el boton de pausa
-        btnPausa.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                reproductor.pausar();
-            }
-        });
-        
-        // Evento para el boton de detener
-        btnDetener.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                reproductor.detener();
-            }
-        });
-        
-        
-        
+        btnReproducir.addActionListener(e -> reproducirArchivo());
+        btnPausa.addActionListener(e -> reproductor.pausar());
+        btnDetener.addActionListener(e -> reproductor.detener());
+    }
+    
+    private int obtenerFilaSeleccionada() {
+        return tablaArchivos.getSelectedRow();
+    }
+    
+    private void reproducirArchivo(){
+        int filaSeleccionada = obtenerFilaSeleccionada();
+            if (filaSeleccionada != -1){ //verificar si hay una fila seleccionada
+                String rutaArchivo = obtenerRutaArchivoSeleccionado();
+                reproductor.reproducir(rutaArchivo);
+            } else {
+                JOptionPane.showMessageDialog(null, "Selecciona un archivo para reproducir");
+           }
     }
     
     private void agregarEventosComboBox(){
-        opcionesComboBox.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String opcionSeleccionada = (String) opcionesComboBox.getSelectedItem();
-                
-                switch (opcionSeleccionada){
-                    case "Mostrar duplicados" : mostrarDuplicados(); break;
-                    case "Ver más grandes" : busqueda.mostrarArchivosMasGrandes(); break;
-                    case "Eliminar archivo(s)" : eliminarArchivoSeleccionado(); break;
-                    case "Mover archivo(s)" : File archivoSeleccionado = obtenerArchivoSeleccionado();
-                        if (archivoSeleccionado != null) {
-                            gestorArchivos.moverArchivo(archivoSeleccionado); // Enviar archivo a GestorArchivos
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Por favor, seleccione un archivo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                        } break;
-                    default : break;
-                }
-            }
-            
-        });
-        
-        comboBoxPlaylists.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String opcionSeleccionada2 = (String) comboBoxPlaylists.getSelectedItem();
-                switch (opcionSeleccionada2){
-                    case "Agregar a playlist" : String nombreArchivo = obtenerNombreArchivoSeleccionado();
-                                                String rutaArchivo = obtenerRutaArchivoSeleccionado();
-                                                if (nombreArchivo != null) {
-                                                VentanaPlaylist ventanaPlaylist = new VentanaPlaylist(nombreArchivo, rutaArchivo);
-                                                ventanaPlaylist.setVisible(true);
-                                                } break;
-                    case "Gestionar Playlists" : VentanaGestionarPlaylists v2 = new VentanaGestionarPlaylists(Interfaz.this); v2.setVisible(true); break;
-                    default : break;
-                }
-            }
-        });
-        
-        comboBoxBuscar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String opcionSeleccionada3 = (String) comboBoxBuscar.getSelectedItem();
-                String terminoBusqueda = null;
-                switch (opcionSeleccionada3) {
-                case "Canción": terminoBusqueda = JOptionPane.showInputDialog("Ingrese la canción a buscar");
-                buscarEnTabla(terminoBusqueda, 0);  // Buscar en la columna de nombre
-                break;
-            case "Artista": terminoBusqueda = JOptionPane.showInputDialog("Ingrese el artista a buscar");
-                buscarEnTabla(terminoBusqueda, 1);  // Buscar en la columna de artista
-                break;
-            case "Álbum": terminoBusqueda = JOptionPane.showInputDialog("Ingrese el álbum a buscar");
-                buscarEnTabla(terminoBusqueda, 2);  // Buscar en la columna de álbum
-                break;
-            default:
-                break;
-        }
-            }
-        });
+        opcionesComboBox.addActionListener(e -> manejarOpcionesComboBox());        
+        comboBoxPlaylists.addActionListener(e -> manejarComboBoxPlaylists());
+        comboBoxBuscar.addActionListener(e -> manejarComboBoxBuscar());
     }
     
-    private void buscarEnTabla(String termino, int columna) {
-        if (termino == null || termino.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese un término de búsqueda válido.");
-            return;
+    private void manejarOpcionesComboBox(){
+        String opcionSeleccionada = (String) opcionesComboBox.getSelectedItem();
+        switch (opcionSeleccionada){
+            case "Mostrar duplicados" : mostrarDuplicados(); break;
+            case "Ver más grandes" : busqueda.mostrarArchivosMasGrandes(); break;
+            case "Eliminar archivo(s)" : eliminarArchivoSeleccionado(); break;
+            case "Mover archivo(s)" : moverArchivoSeleccionado(); break;
+            default : break;
         }
-
-        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
-        DefaultTableModel modeloFiltrado = new DefaultTableModel(new String[]{"Nombre", "Artista", "Album", "Genero", "Año", "Duracion", "Tamaño", "Extension", "Ruta"}, 0);
-
-        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-            String valor = (String) modeloTabla.getValueAt(i, columna);
-            if (valor != null && valor.toLowerCase().contains(termino.toLowerCase())) {
-                Object[] fila = new Object[modeloTabla.getColumnCount()];
-                for (int j = 0; j < modeloTabla.getColumnCount(); j++) {
-                    fila[j] = modeloTabla.getValueAt(i, j);
-                }
-                modeloFiltrado.addRow(fila);
-            }
+    }
+    
+    private void manejarComboBoxPlaylists(){
+        String opcionSeleccionada2 = (String) comboBoxPlaylists.getSelectedItem();
+        switch (opcionSeleccionada2){
+            case "Agregar a playlist" : String nombreArchivo = obtenerNombreArchivoSeleccionado();
+                                        String rutaArchivo = obtenerRutaArchivoSeleccionado();
+                                        if (nombreArchivo != null) {
+                                        VentanaPlaylist ventanaPlaylist = new VentanaPlaylist(nombreArchivo, rutaArchivo);
+                                        ventanaPlaylist.setVisible(true);
+                                        } break;
+            case "Gestionar Playlists" : VentanaGestionarPlaylists v2 = new VentanaGestionarPlaylists(Interfaz.this); v2.setVisible(true); break;
+            default : break;
         }
-
-        if (modeloFiltrado.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, "No se encontraron resultados para la búsqueda");
+    }
+    
+    private void manejarComboBoxBuscar(){
+        String opcionSeleccionada3 = (String) comboBoxBuscar.getSelectedItem();
+        String terminoBusqueda = null;
+        switch (opcionSeleccionada3) {
+            case "Canción": terminoBusqueda = JOptionPane.showInputDialog("Ingrese la canción a buscar");
+                busqueda.buscarEnTabla(terminoBusqueda, 0);  // Buscar en la columna de nombre
+                break;
+            case "Artista": terminoBusqueda = JOptionPane.showInputDialog("Ingrese el artista a buscar");
+                busqueda.buscarEnTabla(terminoBusqueda, 1);  // Buscar en la columna de artista
+                break;
+            case "Álbum": terminoBusqueda = JOptionPane.showInputDialog("Ingrese el álbum a buscar");
+                busqueda.buscarEnTabla(terminoBusqueda, 2);  // Buscar en la columna de álbum
+                break;
+            default: break;
+        }
+    }
+    
+    private void moverArchivoSeleccionado(){
+        File archivoSeleccionado = obtenerArchivoSeleccionado();
+        if (archivoSeleccionado != null) {
+            gestorArchivos.moverArchivo(archivoSeleccionado); // Enviar archivo a GestorArchivos
         } else {
-            tablaArchivos.setModel(modeloFiltrado);
+            JOptionPane.showMessageDialog(null, "Por favor, seleccione un archivo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
     }
     
@@ -308,7 +259,7 @@ public class Interfaz extends JFrame{
 
     // Método para obtener el nombre del archivo seleccionado en la tabla
     public String obtenerNombreArchivoSeleccionado() {
-        int filaSeleccionada = tablaArchivos.getSelectedRow();
+        int filaSeleccionada = obtenerFilaSeleccionada();
         if (filaSeleccionada != -1) {
             return (String) tablaArchivos.getValueAt(filaSeleccionada, 0); // Asume que el nombre está en la columna 0
         } else {
@@ -317,35 +268,32 @@ public class Interfaz extends JFrame{
         }
     }
     
-    private String obtenerRutaArchivoSeleccionado(){
-        int filaSeleccionada = tablaArchivos.getSelectedRow();
-        if (filaSeleccionada != -1) {
-            return (String) tablaArchivos.getValueAt(filaSeleccionada, 8); // para recibir la ruta
-        } else {
-            return null;
-        }
-    }
-    
-    private File obtenerArchivoSeleccionado() {
-    int filaSeleccionada = tablaArchivos.getSelectedRow();
-    if (filaSeleccionada != -1) { // Verifica si hay una fila seleccionada
-        String rutaArchivo = (String) tablaArchivos.getValueAt(filaSeleccionada, 8);
-        return new File(rutaArchivo); // Devuelve el archivo
-    }
-    return null; // No hay selección
+    // Método para obtener la ruta del archivo seleccionado como String
+    private String obtenerRutaArchivoSeleccionado() {
+        File archivo = obtenerArchivoSeleccionado();
+        return archivo != null ? archivo.getPath() : null;
 }
+
+    // Método para obtener el archivo seleccionado como File
+    private File obtenerArchivoSeleccionado() {
+        int filaSeleccionada = obtenerFilaSeleccionada();
+        if (filaSeleccionada != -1) { // Verifica si hay una fila seleccionada
+            String rutaArchivo = (String) tablaArchivos.getValueAt(filaSeleccionada, 8);
+            return new File(rutaArchivo); // Devuelve el archivo
+        }
+        return null; // No hay selección
+    }
     
     public void mostrarCancionesEnTabla(List<String> canciones) {
-    DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
-    modeloTabla.setRowCount(0); // Limpiar la tabla antes de mostrar nuevas canciones
-    for (String cancion : canciones) {
-        modeloTabla.addRow(new Object[]{cancion});
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+        modeloTabla.setRowCount(0); // Limpiar la tabla antes de mostrar nuevas canciones
+        for (String cancion : canciones) {
+            modeloTabla.addRow(new Object[]{cancion});
         }
     }
     
     private void mostrarDuplicados(){
         java.util.List<File> archivosDuplicados = busqueda.buscarDuplicados();
-        
         if (archivosDuplicados.isEmpty()){
             JOptionPane.showMessageDialog(null, "No se encontraron archivos duplicados");
         } else {
@@ -365,7 +313,7 @@ public class Interfaz extends JFrame{
     private void eliminarArchivoSeleccionado(){
         int filaSeleccionada = tablaArchivos.getSelectedRow();
         if (filaSeleccionada != -1){
-            String rutaArchivo = (String) (tablaArchivos.getValueAt(filaSeleccionada, 8));
+            String rutaArchivo = obtenerRutaArchivoSeleccionado();
             File archivo = new File(rutaArchivo);
             int confirmacion = JOptionPane.showConfirmDialog(null, "¿Desea eliminar " + archivo.getName() + "?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
             if (confirmacion == JOptionPane.YES_OPTION){
