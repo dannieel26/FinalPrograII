@@ -37,6 +37,7 @@ public class Interfaz extends JFrame{
     private Busqueda busqueda;
     private Reproductor reproductor;
     private JLabel lblEspacioArchivos;
+    private GestorArchivos gestorArchivos;
     
     //Constructor
     public Interfaz(){
@@ -47,6 +48,7 @@ public class Interfaz extends JFrame{
         
         rutas = new Rutas();
         reproductor = new Reproductor();
+        gestorArchivos = new GestorArchivos();
         reproductor.getMediaPlayerComponent().setBounds(950, 100, 400, 400);
         iniciarComponentes();
     }
@@ -61,9 +63,8 @@ public class Interfaz extends JFrame{
         colocarTabla();
         colocarEtiquetaEspacioTotal();
         colocarComboBox();
-        
+
         busqueda = new Busqueda(tablaArchivos);
-        
         panel.add(reproductor.getMediaPlayerComponent());
         agregarEventos();
         agregarEventosComboBox();
@@ -217,6 +218,12 @@ public class Interfaz extends JFrame{
                     case "Mostrar duplicados" : mostrarDuplicados(); break;
                     case "Ver más grandes" : busqueda.mostrarArchivosMasGrandes(); break;
                     case "Eliminar archivo(s)" : eliminarArchivoSeleccionado(); break;
+                    case "Mover archivo(s)" : File archivoSeleccionado = obtenerArchivoSeleccionado();
+                        if (archivoSeleccionado != null) {
+                            gestorArchivos.moverArchivo(archivoSeleccionado); // Enviar archivo a GestorArchivos
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Por favor, seleccione un archivo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        } break;
                     default : break;
                 }
             }
@@ -318,6 +325,15 @@ public class Interfaz extends JFrame{
             return null;
         }
     }
+    
+    private File obtenerArchivoSeleccionado() {
+    int filaSeleccionada = tablaArchivos.getSelectedRow();
+    if (filaSeleccionada != -1) { // Verifica si hay una fila seleccionada
+        String rutaArchivo = (String) tablaArchivos.getValueAt(filaSeleccionada, 8);
+        return new File(rutaArchivo); // Devuelve el archivo
+    }
+    return null; // No hay selección
+}
     
     public void mostrarCancionesEnTabla(List<String> canciones) {
     DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
