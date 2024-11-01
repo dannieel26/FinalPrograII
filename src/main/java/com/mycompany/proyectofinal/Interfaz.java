@@ -244,14 +244,49 @@ public class Interfaz extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String opcionSeleccionada3 = (String) comboBoxBuscar.getSelectedItem();
+                String terminoBusqueda = null;
                 switch (opcionSeleccionada3) {
-                    case "Canción" : String buscarCancion = JOptionPane.showInputDialog("Ingrese la cancion a buscar"); break;
-                    case "Artista" : String buscarArtista = JOptionPane.showInputDialog("Ingrese el artista a buscar"); break;
-                    case "Álbum" : String buscarÁlbum = JOptionPane.showInputDialog("Ingrese el álbum a buscar"); break;
-                    default : break;
-                }
+                case "Canción": terminoBusqueda = JOptionPane.showInputDialog("Ingrese la canción a buscar");
+                buscarEnTabla(terminoBusqueda, 0);  // Buscar en la columna de nombre
+                break;
+            case "Artista": terminoBusqueda = JOptionPane.showInputDialog("Ingrese el artista a buscar");
+                buscarEnTabla(terminoBusqueda, 1);  // Buscar en la columna de artista
+                break;
+            case "Álbum": terminoBusqueda = JOptionPane.showInputDialog("Ingrese el álbum a buscar");
+                buscarEnTabla(terminoBusqueda, 2);  // Buscar en la columna de álbum
+                break;
+            default:
+                break;
+        }
             }
         });
+    }
+    
+    private void buscarEnTabla(String termino, int columna) {
+        if (termino == null || termino.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese un término de búsqueda válido.");
+            return;
+        }
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+        DefaultTableModel modeloFiltrado = new DefaultTableModel(new String[]{"Nombre", "Artista", "Album", "Genero", "Año", "Duracion", "Tamaño", "Extension", "Ruta"}, 0);
+
+        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+            String valor = (String) modeloTabla.getValueAt(i, columna);
+            if (valor != null && valor.toLowerCase().contains(termino.toLowerCase())) {
+                Object[] fila = new Object[modeloTabla.getColumnCount()];
+                for (int j = 0; j < modeloTabla.getColumnCount(); j++) {
+                    fila[j] = modeloTabla.getValueAt(i, j);
+                }
+                modeloFiltrado.addRow(fila);
+            }
+        }
+
+        if (modeloFiltrado.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No se encontraron resultados para la búsqueda");
+        } else {
+            tablaArchivos.setModel(modeloFiltrado);
+        }
     }
     
     // Método para mostrar las canciones de una playlist en la tabla
