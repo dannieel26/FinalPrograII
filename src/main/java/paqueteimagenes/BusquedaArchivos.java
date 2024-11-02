@@ -27,9 +27,11 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 public class BusquedaArchivos {
 
     private List<File> listaArchivosImagen;
+    private List<File> resultadosBusqueda;
 
     public BusquedaArchivos() {
-        listaArchivosImagen = new ArrayList<>();
+        this.listaArchivosImagen = new ArrayList<>();
+        this.resultadosBusqueda = new ArrayList<>();
     }
 
     public void buscarArchivosImagen(File directorio) {
@@ -82,7 +84,7 @@ public class BusquedaArchivos {
             }
         }
 
-        // Filtramos solo aquellos con más de un archivo
+        //Filtramos solo aquellos con más de un archivo
         duplicados.values().removeIf(lista -> lista.size() < 2);
         return duplicados;
     }
@@ -122,12 +124,12 @@ public class BusquedaArchivos {
         } catch (IOException e) {
             // Manejo de excepciones
             fila[3] = "Desconocida"; // Valor por defecto si no se puede obtener
-            fila[4] = "Desconocida"; // Valor por defecto si no se puede obtener
+            fila[4] = "Desconocida";
         }
 
         fila[5] = String.format("%.2f MB", archivo.length() / (1024.0 * 1024)); // Tamaño en MB
 
-        // Extraer metadatos del archivo
+        // intentar Extraer metadatos del archivo
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(archivo);
             ExifIFD0Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
@@ -137,23 +139,60 @@ public class BusquedaArchivos {
                 String nombreAparato = directory.getString(ExifIFD0Directory.TAG_MAKE);
                 String modeloAparato = directory.getString(ExifIFD0Directory.TAG_MODEL);
                 fila[6] = nombreAparato != null ? nombreAparato : "Desconocido"; // Nombre del aparato
-                fila[7] = modeloAparato != null ? modeloAparato : "Desconocido"; // Modelo del aparato
+                fila[7] = modeloAparato != null ? modeloAparato : "Desconocido";
             } else {
                 fila[6] = "Desconocido"; // Valor por defecto
-                fila[7] = "Desconocido"; // Valor por defecto
+                fila[7] = "Desconocido";
             }
         } catch (Exception e) {
             // Manejo de excepciones
             fila[6] = "Desconocido"; // Valor por defecto si no se puede obtener
-            fila[7] = "Desconocido"; // Valor por defecto si no se puede obtener
+            fila[7] = "Desconocido";
         }
 
-        modelo.addRow(fila); // Agrega la fila al modelo de la tabla
+        modelo.addRow(fila);
     }
     
     public List<File> obtenerArchivosMasGrandes(int limite) {
-        // Ordenar la lista de archivos en función de su tamaño
         listaArchivosImagen.sort((f1, f2) -> Long.compare(f2.length(), f1.length())); // Ordenar de mayor a menor
         return listaArchivosImagen.subList(0, Math.min(limite, listaArchivosImagen.size())); // Devuelve hasta 'limite' archivos
+    }
+    
+    public void buscarEnTabla(String terminoBusqueda, int columna, DefaultTableModel modelo) {
+        resultadosBusqueda.clear();
+        modelo.setRowCount(0); // Limpiar el modelo de la tabla
+
+        for (File archivo : listaArchivosImagen) {
+            boolean coincide = false; // Bandera para verificar si hay coincidencia
+
+            switch (columna) {
+                case 0: // Buscar por nombre
+                    if (archivo.getName().toLowerCase().contains(terminoBusqueda.toLowerCase())) {
+                        coincide = true;
+                    }
+                    break;
+                case 3: // Buscar por fecha de creación
+                    try {
+                        Path path = archivo.toPath();
+                        BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
+                        Date fechaCreacion = new Date(attrs.creationTime().toMillis());
+                        String fechaCreacionFormateada = new SimpleDateFormat("dd/MM/yyyy").format(fechaCreacion);
+
+                        if (fechaCreacionFormateada.contains(terminoBusqueda)) {
+                            coincide = true;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            if (coincide) {
+                resultadosBusqueda.add(archivo);
+                agregarMetadatosTabla(archivo, modelo);
+            }
+        }
     }
 }

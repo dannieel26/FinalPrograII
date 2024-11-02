@@ -187,6 +187,7 @@ public class VentanaInterfaz extends JFrame {
         btnMostrarEspacio.addActionListener(e -> actualizarEspacioTotal());
         btnEliminarArchivo.addActionListener(e -> eliminarArchivoSeleccionado());
         btnVerMasGrandes.addActionListener(e -> mostrarArchivosMasGrandes());
+        comboBoxBuscar.addActionListener(e -> realizarBusqueda());
     }
     
     private void abrirDialogoYBuscarImagenes() {
@@ -271,6 +272,27 @@ public class VentanaInterfaz extends JFrame {
     private boolean esArchivoImagen(File archivo) {
         String extension = obtenerExtension(archivo).toLowerCase();
         return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png") || extension.equals("gif");
+    }
+    
+    private void realizarBusqueda() {
+        String opcionSeleccionada = (String) comboBoxBuscar.getSelectedItem();
+        String terminoBusqueda = null;
+
+        // Obtener el modelo de la tabla
+        DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel(); // Supongamos que tu JTable se llama "tabla"
+
+        switch (opcionSeleccionada) {
+            case "Nombre":
+                terminoBusqueda = JOptionPane.showInputDialog("Ingrese la canción a buscar");
+                busquedaArchivos.buscarEnTabla(terminoBusqueda, 0, modelo);  // Buscar en la columna de nombre
+                break;
+            case "Fecha":
+                terminoBusqueda = JOptionPane.showInputDialog("Ingrese la fecha de creación a buscar");
+                busquedaArchivos.buscarEnTabla(terminoBusqueda, 3, modelo);  // Buscar en la columna de fecha de creación
+                break;
+            default:
+                break;
+        }
     }
     
     private void actualizarEspacioTotal() {
