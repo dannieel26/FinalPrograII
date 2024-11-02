@@ -219,10 +219,7 @@ public class VentanaInterfaz extends JFrame {
         for (File archivo : archivosImagenes) {
             // Convierte el tamaño a MB
             double tamañoMB = archivo.length() / (1024.0 * 1024.0);
-            modeloTabla.addRow(new Object[]{
-                archivo.getName(), obtenerExtension(archivo), archivo.getAbsolutePath(), "", "",
-                String.format("%.2f MB", tamañoMB), "", ""
-            });
+            busquedaArchivos.agregarMetadatosTabla(archivo, modeloTabla);
         }
     }
     

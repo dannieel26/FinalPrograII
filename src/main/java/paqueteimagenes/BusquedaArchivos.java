@@ -13,6 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.table.DefaultTableModel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
 
 /**
  *
@@ -101,16 +107,50 @@ public class BusquedaArchivos {
 
     // Método para agregar metadatos a la tabla
     public void agregarMetadatosTabla(File archivo, DefaultTableModel modelo) {
-        Object[] fila = new Object[7]; // Suponiendo 7 columnas
+        Object[] fila = new Object[8]; // Aumenta el tamaño a 8 columnas
         fila[0] = archivo.getName();
         fila[1] = obtenerExtension(archivo);
         fila[2] = archivo.getAbsolutePath();
-        fila[3] = ""; // Fecha creación (puedes usar una función para obtenerla)
-        fila[4] = new SimpleDateFormat("dd/MM/yyyy").format(new Date(archivo.lastModified())); // Fecha modificación
-        fila[5] = String.format("%.2f MB", archivo.length() / (1024.0 * 1024));
-        fila[6] = ""; // Otros metadatos que se deseen agregar
+
+        try {
+            Path path = archivo.toPath();
+            BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
+
+            // Obtener fecha de creación y modificación
+            Date fechaCreacion = new Date(attrs.creationTime().toMillis());
+            Date fechaModificacion = new Date(attrs.lastModifiedTime().toMillis());
+
+            fila[3] = new SimpleDateFormat("dd/MM/yyyy").format(fechaCreacion); // Fecha creación
+            fila[4] = new SimpleDateFormat("dd/MM/yyyy").format(fechaModificacion); // Fecha modificación
+        } catch (IOException e) {
+            e.printStackTrace(); // Manejo de excepciones
+            fila[3] = "Desconocida"; // Valor por defecto si no se puede obtener
+            fila[4] = "Desconocida"; // Valor por defecto si no se puede obtener
+        }
+
+        fila[5] = String.format("%.2f MB", archivo.length() / (1024.0 * 1024)); // Tamaño en MB
+
+        // Extraer metadatos del archivo
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(archivo);
+            ExifIFD0Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+
+            if (directory != null) {
+                // Obtener nombre del aparato (cámara)
+                String nombreAparato = directory.getString(ExifIFD0Directory.TAG_MAKE);
+                String modeloAparato = directory.getString(ExifIFD0Directory.TAG_MODEL);
+                fila[6] = nombreAparato != null ? nombreAparato : "Desconocido"; // Nombre del aparato
+                fila[7] = modeloAparato != null ? modeloAparato : "Desconocido"; // Modelo del aparato
+            } else {
+                fila[6] = "Desconocido"; // Valor por defecto
+                fila[7] = "Desconocido"; // Valor por defecto
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Manejo de excepciones
+            fila[6] = "Error"; // Valor por defecto
+            fila[7] = "Error"; // Valor por defecto
+        }
 
         modelo.addRow(fila); // Agrega la fila al modelo de la tabla
     }
-
 }
