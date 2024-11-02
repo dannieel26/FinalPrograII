@@ -62,7 +62,7 @@ public class Busqueda {
         });
     }
     
-    //Método para limpiar todo una vez al buscar una nueva carpeta
+    //Método 
     public long buscarArchivosRaiz(File carpeta){
         //Limpiar el contenido de anterior de la tabla
         DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();

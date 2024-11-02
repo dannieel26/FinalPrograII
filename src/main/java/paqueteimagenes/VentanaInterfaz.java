@@ -3,11 +3,18 @@ package paqueteimagenes;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -28,6 +35,8 @@ public class VentanaInterfaz extends JFrame {
     private JFileChooser fileChooser;
     private JLabel lblEspacioArchivos;
     private JComboBox comboBoxBuscar, comboBoxAgrupar;
+    private BusquedaArchivos busquedaArchivos;
+    private final String archivoRutaDefault = "ultimaRuta.txt";
     
     public VentanaInterfaz(){
         this.setSize(1100, 550);
@@ -36,6 +45,7 @@ public class VentanaInterfaz extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
         iniciarComponentes();
+        cargarRutaDefault();
     }
     
     private void iniciarComponentes(){
@@ -47,6 +57,8 @@ public class VentanaInterfaz extends JFrame {
         colocarFileChooser();
         colocarEtiquetaEspacio();
         colocarComboBox();
+        busquedaArchivos = new BusquedaArchivos();
+        agregarEventos();
     }
     
     private void colocarPanel(){
@@ -118,7 +130,7 @@ public class VentanaInterfaz extends JFrame {
     }
     
     private void colocarTabla(){
-        String[] columnas = {"Nombre","Artista","Album","Genero","Año","Duracion","Tamaño","Extension","Ruta"};
+        String[] columnas = {"Nombre","Extension","Ruta","Fecha creacion","Fecha modificacion","Tamaño","Aparato obtención","Modelo obtención"};
         DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
         tablaArchivos = new JTable(modeloTabla);
         
@@ -157,5 +169,72 @@ public class VentanaInterfaz extends JFrame {
         comboBoxAgrupar.setBackground(new Color(2,63,64));
         comboBoxAgrupar.setForeground(Color.WHITE);
         panel.add(comboBoxAgrupar);
+    }
+    
+    private void agregarEventos(){
+        btnBuscarCarpeta.addActionListener(e -> abrirDialogoYBuscarImagenes());
+    }
+    
+    private void abrirDialogoYBuscarImagenes() {
+        int seleccion = fileChooser.showOpenDialog(this);
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            String ruta = fileChooser.getSelectedFile().getAbsolutePath();
+            ctRuta.setText(ruta);
+            guardarRutaDefault(ruta); // Guardar como última ruta
+            iniciarBusquedaImagenes(ruta);
+        }
+    }
+    
+    private void iniciarBusquedaImagenes(String ruta) {
+        File directorioInicial = new File(ruta);
+        if (!directorioInicial.isDirectory()) {
+            JOptionPane.showMessageDialog(this, "Seleccione una carpeta válida.");
+            return;
+        }
+        
+        // Búsqueda de archivos de imagen en la ruta seleccionada
+        busquedaArchivos.buscarArchivosImagen(directorioInicial);
+        
+        // Obtener archivos encontrados y mostrar en la tabla
+        List<File> archivosImagenes = busquedaArchivos.getListaArchivosImagen();
+        mostrarArchivosEnTabla(archivosImagenes);
+    }
+    
+    private void mostrarArchivosEnTabla(List<File> archivosImagenes) {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+        modeloTabla.setRowCount(0); // Limpiar tabla
+
+        for (File archivo : archivosImagenes) {
+            modeloTabla.addRow(new Object[]{
+                archivo.getName(), obtenerExtension(archivo), archivo.getAbsolutePath(), "","",
+                archivo.length() / 1024 + " KB", "",""
+            });
+        }
+    }
+    
+    private String obtenerExtension(File archivo) {
+        String nombre = archivo.getName();
+        int i = nombre.lastIndexOf('.');
+        return (i > 0) ? nombre.substring(i + 1) : "";
+    }
+    
+    private void guardarRutaDefault(String ruta) {
+        try (FileWriter writer = new FileWriter(archivoRutaDefault)) {
+            writer.write(ruta);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void cargarRutaDefault() {
+        try {
+            if (Files.exists(Paths.get(archivoRutaDefault))) {
+                String ruta = new String(Files.readAllBytes(Paths.get(archivoRutaDefault)));
+                ctRuta.setText(ruta);
+                iniciarBusquedaImagenes(ruta);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
