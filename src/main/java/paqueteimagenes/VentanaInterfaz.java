@@ -185,6 +185,7 @@ public class VentanaInterfaz extends JFrame {
         btnAbrirInterfaz1.addActionListener(e -> abrirOtraInterfaz());
         btnVerDuplicados.addActionListener(e -> mostrarDuplicados());
         btnMostrarEspacio.addActionListener(e -> actualizarEspacioTotal());
+        btnEliminarArchivo.addActionListener(e -> eliminarArchivoSeleccionado());
     }
     
     private void abrirDialogoYBuscarImagenes() {
@@ -307,8 +308,38 @@ public class VentanaInterfaz extends JFrame {
                                         " | Espacio ocupado: " + espacioTotalDuplicados / (1024 * 1024) + " MB");
         }
     }
+    
+    private int obtenerFilaSeleccionada() {
+        return tablaArchivos.getSelectedRow();
+    }
 
-    // Método para vaciar la tabla
+    private void eliminarArchivoSeleccionado() {
+        int filaSeleccionada = obtenerFilaSeleccionada();
+        if (filaSeleccionada != -1) {
+            String rutaArchivo = tablaArchivos.getValueAt(filaSeleccionada, 2).toString(); // Obtener la ruta del archivo de la columna correspondiente
+            File archivoAEliminar = new File(rutaArchivo);
+
+            if (archivoAEliminar.exists()) {
+                int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar este archivo?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+                if (confirmacion == JOptionPane.YES_OPTION) {
+                    if (archivoAEliminar.delete()) {
+                        JOptionPane.showMessageDialog(this, "Archivo eliminado con éxito.");
+                        // Actualizar la tabla
+                        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+                        modeloTabla.removeRow(filaSeleccionada); // Eliminar la fila de la tabla
+                        actualizarEspacioTotal(); // Actualizar el espacio total
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al eliminar el archivo.");
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "El archivo seleccionado no existe.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un archivo de la tabla para eliminar.");
+        }
+    }
+
     private void vaciarTabla() {
         DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
         modelo.setRowCount(0); // Limpiar la tabla

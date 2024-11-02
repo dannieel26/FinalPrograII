@@ -19,6 +19,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -105,25 +106,24 @@ public class BusquedaArchivos {
         return sb.toString();
     }
 
-    // Método para agregar metadatos a la tabla
     public void agregarMetadatosTabla(File archivo, DefaultTableModel modelo) {
         Object[] fila = new Object[8]; // Aumenta el tamaño a 8 columnas
         fila[0] = archivo.getName();
         fila[1] = obtenerExtension(archivo);
         fila[2] = archivo.getAbsolutePath();
 
+        // Obtener fecha de creación y modificación
         try {
             Path path = archivo.toPath();
             BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
 
-            // Obtener fecha de creación y modificación
             Date fechaCreacion = new Date(attrs.creationTime().toMillis());
             Date fechaModificacion = new Date(attrs.lastModifiedTime().toMillis());
 
             fila[3] = new SimpleDateFormat("dd/MM/yyyy").format(fechaCreacion); // Fecha creación
             fila[4] = new SimpleDateFormat("dd/MM/yyyy").format(fechaModificacion); // Fecha modificación
         } catch (IOException e) {
-            e.printStackTrace(); // Manejo de excepciones
+            // Manejo de excepciones
             fila[3] = "Desconocida"; // Valor por defecto si no se puede obtener
             fila[4] = "Desconocida"; // Valor por defecto si no se puede obtener
         }
@@ -146,9 +146,9 @@ public class BusquedaArchivos {
                 fila[7] = "Desconocido"; // Valor por defecto
             }
         } catch (Exception e) {
-            e.printStackTrace(); // Manejo de excepciones
-            fila[6] = "Error"; // Valor por defecto
-            fila[7] = "Error"; // Valor por defecto
+            // Manejo de excepciones
+            fila[6] = "Desconocido"; // Valor por defecto si no se puede obtener
+            fila[7] = "Desconocido"; // Valor por defecto si no se puede obtener
         }
 
         modelo.addRow(fila); // Agrega la fila al modelo de la tabla
