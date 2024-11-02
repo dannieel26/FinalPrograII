@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import paqueteimagenes.VentanaInterfaz;
 
 /**
  *
@@ -26,7 +27,7 @@ public class Interfaz extends JFrame{
     //Atributos de la clase
     private JPanel panel;
     private JTextField ctRuta;
-    private JButton btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnVerLetra;
+    private JButton btnAbrirInterfaz2,btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnVerLetra;
     private JTable tablaArchivos;
     private JComboBox<String> opcionesComboBox, comboBoxPlaylists, comboBoxBuscar,comboBoxOrdenar;
     private JScrollPane scrollTabla;
@@ -87,7 +88,7 @@ public class Interfaz extends JFrame{
     
     private void colocarCajaTexto(){
         ctRuta = new JTextField();
-        ctRuta.setBounds(200, 50, 700, 30);
+        ctRuta.setBounds(195, 50, 685, 30);
         ctRuta.setBackground(Color.WHITE);
         ctRuta.setEditable(false);
         panel.add(ctRuta);
@@ -124,6 +125,12 @@ public class Interfaz extends JFrame{
         btnVerLetra.setBackground(new Color(0,130,132));
         btnVerLetra.setForeground(Color.WHITE);
         panel.add(btnVerLetra);
+        
+        btnAbrirInterfaz2 = new JButton("Ir a imágenes");
+        btnAbrirInterfaz2.setBounds(905, 45, 140, 40);
+        btnAbrirInterfaz2.setBackground(new Color(0,127,0));
+        btnAbrirInterfaz2.setForeground(Color.WHITE);
+        panel.add(btnAbrirInterfaz2);
     }
     
     private void colocarTabla(){
@@ -204,6 +211,7 @@ public class Interfaz extends JFrame{
         btnPausa.addActionListener(e -> reproductor.pausar());
         btnDetener.addActionListener(e -> reproductor.detener());
         btnVerLetra.addActionListener(e -> mostrarLetra());
+        btnAbrirInterfaz2.addActionListener(e -> AbrirInterfazImagenes());
     }
     
     private int obtenerFilaSeleccionada() {
@@ -368,6 +376,7 @@ public class Interfaz extends JFrame{
             
             //Actualizar el label para mostrar el espacio ocupado por duplicados
             lblEspacioArchivos.setText("Duplicados: " + archivosDuplicados.size() + " | Espacio ocupado: " + espacioTotalDuplicados / (1024 * 1024) + " MB");
+            actualizarEspacioTotal();
         }
     }
     
@@ -427,13 +436,44 @@ public class Interfaz extends JFrame{
             if (carpeta.exists() && carpeta.isDirectory()){
                 vaciarTabla();
                 long espacioTotal = busqueda.buscarArchivosRaiz(carpeta);
-                lblEspacioArchivos.setText("Espacio total ocupado: " + (espacioTotal / (1024 * 1024)) + " MB");
+                actualizarEspacioTotal();
             }
         }
+    }
+    
+    private void actualizarEspacioTotal() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+        double espacioTotal = 0;
+
+        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+            // Obtener el tamaño de cada archivo en la columna correspondiente (asumiendo que "Tamaño" es la columna 6)
+            String tamañoStr = modeloTabla.getValueAt(i, 6).toString().trim(); // Eliminar espacios
+
+            try {
+                // Eliminar la unidad (por ejemplo, " MB") y reemplazar la coma por un punto si es necesario
+                if (tamañoStr.toLowerCase().endsWith("mb")) {
+                    tamañoStr = tamañoStr.substring(0, tamañoStr.length() - 2).trim(); // Eliminar "MB"
+                }
+                // Convertir el tamaño a bytes (ajusta esto según tu unidad de tamaño)
+                espacioTotal += Double.parseDouble(tamañoStr); // Asumiendo que el tamaño está en MB
+            } catch (NumberFormatException e) {
+                System.err.println("Error al convertir el tamaño: " + tamañoStr);
+            }
+        }
+
+        // Actualizar la etiqueta con el espacio total ocupado
+        lblEspacioArchivos.setText(String.format("Espacio total ocupado: %.2f MB", espacioTotal));
     }
     
     private void vaciarTabla(){
         DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
         modelo.setRowCount(0);
+    }
+    
+    private void AbrirInterfazImagenes(){
+        // Crear una instancia de la otra interfaz y abrirla
+        VentanaInterfaz vi = new VentanaInterfaz();
+        vi.setVisible(true);
+        this.dispose();
     }
 }
