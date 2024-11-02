@@ -28,7 +28,7 @@ public class Interfaz extends JFrame{
     private JTextField ctRuta;
     private JButton btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnVerLetra;
     private JTable tablaArchivos;
-    private JComboBox<String> opcionesComboBox, comboBoxPlaylists, comboBoxBuscar;
+    private JComboBox<String> opcionesComboBox, comboBoxPlaylists, comboBoxBuscar,comboBoxOrdenar;
     private JScrollPane scrollTabla;
     private JFileChooser fileChooser;
     private Rutas rutas;
@@ -39,7 +39,7 @@ public class Interfaz extends JFrame{
     
     //Constructor
     public Interfaz(){
-        this.setSize(980, 500);
+        this.setSize(1100, 550);
         setTitle("Administrador multimedia");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -47,7 +47,6 @@ public class Interfaz extends JFrame{
         rutas = new Rutas();
         reproductor = new Reproductor();
         gestorArchivos = new GestorArchivos();
-        reproductor.getMediaPlayerComponent().setBounds(950, 100, 400, 400);
         iniciarComponentes();
     }
     
@@ -73,21 +72,23 @@ public class Interfaz extends JFrame{
     private void colocarPanel(){
         panel = new JPanel();
         panel.setLayout(null);
-        panel.setBackground(Color.gray);
+        panel.setBackground(new Color(217,250,182));
         this.getContentPane().add(panel);
     }
     
     //Métodos gráficos
     private void colocarEtiquetas(){
         JLabel etiqueta1 = new JLabel("Administrador multimedia");
-        etiqueta1.setBounds(325,20,230,20);
+        etiqueta1.setBounds(425,15,230,20);
         etiqueta1.setFont(new Font("arial",1,18));
+        etiqueta1.setForeground(new Color(0,127,0)); // Verde oscuro
         panel.add(etiqueta1);
     }
     
     private void colocarCajaTexto(){
         ctRuta = new JTextField();
-        ctRuta.setBounds(200, 50, 600, 30);
+        ctRuta.setBounds(200, 50, 700, 30);
+        ctRuta.setBackground(Color.WHITE);
         ctRuta.setEditable(false);
         panel.add(ctRuta);
     }
@@ -95,22 +96,33 @@ public class Interfaz extends JFrame{
     private void colocarBotones(){
         btnBuscarCarpeta = new JButton("Buscar Carpeta");
         btnBuscarCarpeta.setBounds(35, 45, 140, 40);
+        btnBuscarCarpeta.setBackground(new Color(0,127,0)); // Botón verde oscuro
+        btnBuscarCarpeta.setForeground(Color.WHITE);
         panel.add(btnBuscarCarpeta);
         
         btnReproducir = new JButton("Reproducir");
         btnReproducir.setBounds(35, 390, 110, 40);
+        btnReproducir.setBackground(new Color(2,63,64));
+        btnReproducir.setForeground(Color.WHITE);
         panel.add(btnReproducir);
         
         btnPausa = new JButton("Pausa");
         btnPausa.setBounds(160, 390, 110, 40);
+        btnPausa.setBackground(new Color(2,63,64));
+        btnPausa.setForeground(Color.WHITE);
         panel.add(btnPausa);
         
         btnDetener = new JButton("Detener");
         btnDetener.setBounds(285, 390, 110, 40);
+        btnDetener.setBackground(new Color(2,63,64));
+        btnDetener.setForeground(Color.WHITE);
+
         panel.add(btnDetener);
         
         btnVerLetra = new JButton("Ver letra");
         btnVerLetra.setBounds(410, 390, 110, 40);
+        btnVerLetra.setBackground(new Color(0,130,132));
+        btnVerLetra.setForeground(Color.WHITE);
         panel.add(btnVerLetra);
     }
     
@@ -120,7 +132,7 @@ public class Interfaz extends JFrame{
         tablaArchivos = new JTable(modeloTabla);
         
         scrollTabla = new JScrollPane (tablaArchivos);
-        scrollTabla.setBounds(35, 120, 895, 240);
+        scrollTabla.setBounds(35, 120, 1010, 240);
         panel.add(scrollTabla);
     }
     
@@ -142,20 +154,13 @@ public class Interfaz extends JFrame{
     }
     
     private void colocarComboBox(){
-        opcionesComboBox = new JComboBox<>();
-        opcionesComboBox.addItem("Seleccionar opción");
-        opcionesComboBox.addItem("Mostrar duplicados");
-        opcionesComboBox.addItem("Ver más grandes");
-        opcionesComboBox.addItem("Eliminar archivo(s)");
-        opcionesComboBox.addItem("Mover archivo(s)");
-        opcionesComboBox.setBounds(800, 390, 140, 40);
-        panel.add(opcionesComboBox);
-        
         comboBoxPlaylists = new JComboBox<>();
-        comboBoxPlaylists.addItem("Opciones Playlist");
+        comboBoxPlaylists.addItem("Opciones playlist");
         comboBoxPlaylists.addItem("Agregar a playlist");
         comboBoxPlaylists.addItem("Gestionar Playlists");
-        comboBoxPlaylists.setBounds(660,390,125,40);
+        comboBoxPlaylists.setBounds(535,390,120,40);
+        comboBoxPlaylists.setForeground(Color.WHITE);
+        comboBoxPlaylists.setBackground(new Color(0,130,132));
         panel.add(comboBoxPlaylists);
         
         comboBoxBuscar = new JComboBox<>();
@@ -163,8 +168,33 @@ public class Interfaz extends JFrame{
         comboBoxBuscar.addItem("Canción");
         comboBoxBuscar.addItem("Artista");
         comboBoxBuscar.addItem("Álbum");
-        comboBoxBuscar.setBounds(535, 390, 110, 40);
+        comboBoxBuscar.setBackground(new Color(2,63,64));
+        comboBoxBuscar.setForeground(Color.WHITE);
+        comboBoxBuscar.setBounds(670, 390, 110, 40);
         panel.add(comboBoxBuscar);
+        
+        comboBoxOrdenar = new JComboBox<>();
+        comboBoxOrdenar.addItem("Ordenar por...");
+        comboBoxOrdenar.addItem("Artista");
+        comboBoxOrdenar.addItem("Album");
+        comboBoxOrdenar.addItem("Genero");
+        comboBoxOrdenar.addItem("Año");
+        comboBoxOrdenar.addItem("Duración");
+        comboBoxOrdenar.setBounds(795, 390, 105, 40);
+        comboBoxOrdenar.setBackground(new Color(2,63,64));
+        comboBoxOrdenar.setForeground(Color.WHITE);
+        panel.add(comboBoxOrdenar);
+        
+        opcionesComboBox = new JComboBox<>();
+        opcionesComboBox.addItem("Seleccionar opción");
+        opcionesComboBox.addItem("Mostrar duplicados");
+        opcionesComboBox.addItem("Ver más grandes");
+        opcionesComboBox.addItem("Eliminar archivo(s)");
+        opcionesComboBox.addItem("Mover archivo(s)");
+        opcionesComboBox.setBounds(915, 390, 135, 40);
+        opcionesComboBox.setBackground(new Color(2,63,64));
+        opcionesComboBox.setForeground(Color.WHITE);
+        panel.add(opcionesComboBox);
     }
     
     private void agregarEventos(){
@@ -180,20 +210,36 @@ public class Interfaz extends JFrame{
         return tablaArchivos.getSelectedRow();
     }
     
-    private void reproducirArchivo(){
+    private void reproducirArchivo() {
         int filaSeleccionada = obtenerFilaSeleccionada();
-            if (filaSeleccionada != -1){ //verificar si hay una fila seleccionada
-                String rutaArchivo = obtenerRutaArchivoSeleccionado();
-                reproductor.reproducir(rutaArchivo);
+        if (filaSeleccionada != -1) { // Verificar si hay una fila seleccionada
+            String rutaArchivo = obtenerRutaArchivoSeleccionado();
+
+            // Verificar la extensión del archivo
+            if (rutaArchivo.endsWith(".mp4") || rutaArchivo.endsWith(".flv")) {
+                // Abrir el reproductor de video
+                VentanaReproductor ventanaReproductor = new VentanaReproductor(rutaArchivo);
+                ventanaReproductor.setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(null, "Selecciona un archivo para reproducir");
-           }
+                // Reproducir el archivo de audio normalmente
+                reproductor.reproducir(rutaArchivo);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Selecciona un archivo para reproducir");
+        }
+    }
+    
+    public void abrirReproductorDeVideo(String archivo) {
+        // Crear y mostrar la ventana del reproductor de video
+        VentanaReproductor ventanaReproductor = new VentanaReproductor(archivo);
+        ventanaReproductor.setVisible(true);
     }
     
     private void agregarEventosComboBox(){
         opcionesComboBox.addActionListener(e -> manejarOpcionesComboBox());        
         comboBoxPlaylists.addActionListener(e -> manejarComboBoxPlaylists());
         comboBoxBuscar.addActionListener(e -> manejarComboBoxBuscar());
+        comboBoxOrdenar.addActionListener(e -> manejarComboBoxOrdenar());
     }
     
     private void manejarOpcionesComboBox(){
@@ -234,6 +280,26 @@ public class Interfaz extends JFrame{
             case "Álbum": terminoBusqueda = JOptionPane.showInputDialog("Ingrese el álbum a buscar");
                 busqueda.buscarEnTabla(terminoBusqueda, 2);  // Buscar en la columna de álbum
                 break;
+            default: break;
+        }
+    }
+    
+     private void manejarComboBoxOrdenar() {
+        String opcionSeleccionada = (String) comboBoxOrdenar.getSelectedItem();
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+
+        // Verifica si hay filas en la tabla
+        if (modeloTabla.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(null, "No hay archivos para ordenar.");
+            return;
+        }
+
+        switch (opcionSeleccionada) {
+            case "Artista": gestorArchivos.ordenarColumna(modeloTabla, 1); break;
+            case "Album": gestorArchivos.ordenarColumna(modeloTabla, 2); break;
+            case "Genero": gestorArchivos.ordenarColumna(modeloTabla, 3); break;
+            case "Año": gestorArchivos.ordenarColumna(modeloTabla, 4); break;
+            case "Duración": gestorArchivos.ordenarColumna(modeloTabla, 5); break;
             default: break;
         }
     }
