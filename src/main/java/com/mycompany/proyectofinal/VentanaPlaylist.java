@@ -18,7 +18,7 @@ public class VentanaPlaylist extends JFrame {
     private DefaultTableModel modeloTabla;
     private JButton btnConfirmar, btnCancelar;
     private PlaylistManager playlistManager; // Para gestionar las playlists
-    private String nombreArchivo; // Nombre de la canción seleccionada
+    private String nombreArchivo;
     private String rutaArchivo;
 
     public VentanaPlaylist(String nombreArchivo, String rutaArchivo) {
@@ -29,7 +29,7 @@ public class VentanaPlaylist extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         
-        playlistManager = new PlaylistManager(); // Inicializamos PlaylistManager
+        playlistManager = new PlaylistManager();
 
         modeloTabla = new DefaultTableModel(new String[]{"Agregar " + nombreArchivo + " a..."}, 0);
         tablaPlaylist = new JTable(modeloTabla);
@@ -65,7 +65,6 @@ public class VentanaPlaylist extends JFrame {
         cargarPlaylists(); // Cargar las playlists disponibles al iniciar
     }
     
-    // Método para cargar playlists en la tabla
     private void cargarPlaylists() {
         modeloTabla.setRowCount(0); // Limpiar la tabla
         List<String> playlists = playlistManager.cargarPlaylists();

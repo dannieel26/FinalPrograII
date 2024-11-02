@@ -16,7 +16,6 @@ public class Reproductor {
         mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
     }
     
-    //Método para reproducir un archivo de audio o reanudar
     public void reproducir(String archivo){
         if (isPaused){
             mediaPlayerComponent.mediaPlayer().controls().play(); // reanudar

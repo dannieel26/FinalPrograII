@@ -14,7 +14,6 @@ import java.io.IOException;
 public class Rutas {
     private final String archivoRuta = "ruta_predefinida.txt";
     
-    //Método para obtener la ruta seleccionada
     public void obtenerRutaSeleccionada(String ruta){
         try{
             FileWriter writer = new FileWriter(archivoRuta);
@@ -25,7 +24,6 @@ public class Rutas {
         }
     }
     
-    //Método para leer la ruta obtenida
     public String leerRutaObtenida(){
         String ruta = null;
         try{

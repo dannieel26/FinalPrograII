@@ -14,7 +14,6 @@ import javax.swing.JOptionPane;
 public class PlaylistManager {
     private static final String FILE_NAME = "playlists.txt";
 
-    // Método para guardar una nueva playlist
     public void agregarPlaylist(String nombrePlaylist) {
     // Crear un nuevo archivo para la playlist
     File nuevoArchivo = new File("playlists/" + nombrePlaylist + ".txt");
@@ -51,7 +50,6 @@ public class PlaylistManager {
         return playlists;
     }
 
-    // Método para borrar una playlist
     public void borrarPlaylist(String nombrePlaylist) {
         List<String> playlists = cargarPlaylists();
 

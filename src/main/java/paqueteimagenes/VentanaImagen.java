@@ -1,10 +1,13 @@
 
-    package paqueteimagenes;
+package paqueteimagenes;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.Timer;
 
 /**
  *
@@ -25,17 +28,16 @@ public class VentanaImagen extends JFrame {
         labelImagen.setHorizontalAlignment(JLabel.CENTER);
         add(labelImagen);
 
-        // Cargar la imagen original
         imagenOriginal = new ImageIcon(rutaImagen);
 
         // Mostrar la imagen por primera vez
         ajustarImagen();
 
-        // Crear un temporizador con un retraso de 100 ms para redimensionar la imagen
+        //temporizador con un retraso de 100 ms para redimensionar la imagen
         timer = new Timer(100, e -> ajustarImagen());
         timer.setRepeats(false); // Solo ejecuta una vez tras el último evento
 
-        // Añadir listener para iniciar el temporizador en cada redimensionamiento
+        // listener para iniciar el temporizador en cada redimensionamiento
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {

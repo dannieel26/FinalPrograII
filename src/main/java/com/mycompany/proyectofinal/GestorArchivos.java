@@ -69,7 +69,6 @@ public class GestorArchivos {
         }
     }
 
-    // Método para convertir la duración a segundos
     private int convertirDuracionASegundos(String duracion) {
         String[] partes = duracion.split(":");
         int segundos = 0;

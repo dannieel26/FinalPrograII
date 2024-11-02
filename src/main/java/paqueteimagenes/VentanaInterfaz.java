@@ -21,6 +21,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import com.mycompany.proyectofinal.Interfaz;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 /**
@@ -189,6 +191,7 @@ public class VentanaInterfaz extends JFrame {
         btnVerMasGrandes.addActionListener(e -> mostrarArchivosMasGrandes());
         comboBoxBuscar.addActionListener(e -> realizarBusqueda());
         btnMoverArchivo.addActionListener(e -> moverArchivoSeleccionado());
+        comboBoxAgrupar.addActionListener(e -> agruparPorFecha());
     }
     
     private void abrirDialogoYBuscarImagenes() {
@@ -196,7 +199,7 @@ public class VentanaInterfaz extends JFrame {
         if (seleccion == JFileChooser.APPROVE_OPTION) {
             String ruta = fileChooser.getSelectedFile().getAbsolutePath();
             ctRuta.setText(ruta);
-            guardarRutaDefault(ruta); // Guardar como última ruta
+            guardarRutaDefault(ruta);
             iniciarBusquedaImagenes(ruta);
         }
     }
@@ -208,7 +211,6 @@ public class VentanaInterfaz extends JFrame {
             return;
         }
         
-        // Búsqueda de archivos de imagen en la ruta seleccionada
         busquedaArchivos.buscarArchivosImagen(directorioInicial);
         
         // Obtener archivos encontrados y mostrar en la tabla
@@ -221,8 +223,6 @@ public class VentanaInterfaz extends JFrame {
         modeloTabla.setRowCount(0); // Limpiar tabla
 
         for (File archivo : archivosImagenes) {
-            // Convierte el tamaño a MB
-            double tamañoMB = archivo.length() / (1024.0 * 1024.0);
             busquedaArchivos.agregarMetadatosTabla(archivo, modeloTabla);
         }
     }
@@ -280,7 +280,7 @@ public class VentanaInterfaz extends JFrame {
         String terminoBusqueda = null;
 
         // Obtener el modelo de la tabla
-        DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel(); // Supongamos que tu JTable se llama "tabla"
+        DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
 
         switch (opcionSeleccionada) {
             case "Nombre":
@@ -300,7 +300,7 @@ public class VentanaInterfaz extends JFrame {
         double espacioTotalMB = 0.0;
         DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
         for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-            String tamañoStr = (String) modeloTabla.getValueAt(i, 5); // Suponiendo que la columna 5 tiene el tamaño
+            String tamañoStr = (String) modeloTabla.getValueAt(i, 5);
             String[] partes = tamañoStr.split(" "); // Divide el String
             if (partes.length > 0) {
                 espacioTotalMB += Double.parseDouble(partes[0]); // Suma el valor numérico en MB
@@ -322,7 +322,6 @@ public class VentanaInterfaz extends JFrame {
             for (List<File> archivos : archivosDuplicadosMap.values()) {
                 for (File archivo : archivos) {
                     espacioTotalDuplicados += archivo.length();
-                    // Agregar metadatos a la tabla (asumiendo que tienes un método para esto)
                     busquedaArchivos.agregarMetadatosTabla(archivo, modelo);
                 }
             }
@@ -335,11 +334,11 @@ public class VentanaInterfaz extends JFrame {
     
     public void mostrarArchivosMasGrandes() {
         List<File> archivosMasGrandes = busquedaArchivos.obtenerArchivosMasGrandes(15);
-        DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel(); // Asegúrate de tener la referencia correcta a tu tabla
+        DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel();
         modelo.setRowCount(0); // Limpia la tabla antes de agregar nuevos datos
 
         for (File archivo : archivosMasGrandes) {
-            busquedaArchivos.agregarMetadatosTabla(archivo, modelo); // Usa tu método existente para agregar metadatos
+            busquedaArchivos.agregarMetadatosTabla(archivo, modelo);
         }
     }
     
@@ -357,20 +356,20 @@ public class VentanaInterfaz extends JFrame {
                 int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar este archivo?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
                 if (confirmacion == JOptionPane.YES_OPTION) {
                     if (archivoAEliminar.delete()) {
-                        JOptionPane.showMessageDialog(this, "Archivo eliminado con éxito.");
+                        JOptionPane.showMessageDialog(this, "Archivo eliminado con éxito");
                         // Actualizar la tabla
                         DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
                         modeloTabla.removeRow(filaSeleccionada); // Eliminar la fila de la tabla
                         actualizarEspacioTotal(); // Actualizar el espacio total
                     } else {
-                        JOptionPane.showMessageDialog(this, "Error al eliminar el archivo.");
+                        JOptionPane.showMessageDialog(this, "Error al eliminar el archivo");
                     }
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "El archivo seleccionado no existe.");
+                JOptionPane.showMessageDialog(this, "El archivo seleccionado no existe");
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Seleccione un archivo de la tabla para eliminar.");
+            JOptionPane.showMessageDialog(this, "Seleccione un archivo de la tabla para eliminar");
         }
     }
     
@@ -378,7 +377,7 @@ public class VentanaInterfaz extends JFrame {
         int filaSeleccionada = tablaArchivos.getSelectedRow();
 
         if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione un archivo de la tabla para mover.");
+            JOptionPane.showMessageDialog(this, "Seleccione un archivo de la tabla para mover");
             return;
         }
 
@@ -386,7 +385,7 @@ public class VentanaInterfaz extends JFrame {
         File archivoSeleccionado = new File(rutaArchivo);
 
         if (!archivoSeleccionado.exists()) {
-            JOptionPane.showMessageDialog(this, "El archivo seleccionado no existe.");
+            JOptionPane.showMessageDialog(this, "El archivo seleccionado no existe");
             return;
         }
 
@@ -416,6 +415,65 @@ public class VentanaInterfaz extends JFrame {
         int filaSeleccionada = tablaArchivos.getSelectedRow();
         if (filaSeleccionada != -1) {
             modeloTabla.removeRow(filaSeleccionada); // Eliminar la fila del archivo movido
+        }
+    }
+    
+    private void agruparPorFecha() {
+        String opcionSeleccionada = (String) comboBoxAgrupar.getSelectedItem();
+
+        // Verificar la opción seleccionada y solicitar el dato correspondiente
+        String criterio = null;
+        switch (opcionSeleccionada) {
+            case "Año":
+                criterio = JOptionPane.showInputDialog(this, "Ingrese el año para agrupar:");
+                if (criterio != null && !criterio.isEmpty()) {
+                    agruparPor("Año", criterio);
+                } break;
+            case "Mes":
+                criterio = JOptionPane.showInputDialog(this, "Ingrese el mes (formato MM) para agrupar:");
+                if (criterio != null && !criterio.isEmpty()) {
+                    agruparPor("Mes", criterio);
+                } break;
+            case "Día":
+                criterio = JOptionPane.showInputDialog(this, "Ingrese el día (formato DD) para agrupar:");
+                if (criterio != null && !criterio.isEmpty()) {
+                    agruparPor("Día", criterio);
+                } break;
+
+            default: break;
+        }
+    }
+
+    private void agruparPor(String tipo, String valor) {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+        modeloTabla.setRowCount(0); // Limpiar la tabla antes de mostrar resultados agrupados
+
+        List<File> archivosImagenes = busquedaArchivos.getListaArchivosImagen();
+        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String valorFormateado = String.format("%02d", Integer.parseInt(valor));
+
+        for (File archivo : archivosImagenes) {
+            String fechaCreacion = obtenerFechaCreacion(archivo); // Formato de fecha: "yyyy-MM-dd"
+
+            // Comparación basada en el tipo seleccionado
+            if (tipo.equals("Año") && fechaCreacion.startsWith(valor)) {
+                busquedaArchivos.agregarMetadatosTabla(archivo, modeloTabla);
+            } else if (tipo.equals("Mes") && fechaCreacion.substring(5, 7).equals(valorFormateado)) {
+                busquedaArchivos.agregarMetadatosTabla(archivo, modeloTabla);
+            } else if (tipo.equals("Día") && fechaCreacion.substring(8, 10).equals(valorFormateado)) {
+                busquedaArchivos.agregarMetadatosTabla(archivo, modeloTabla);
+            }
+        }
+    }
+
+    private String obtenerFechaCreacion(File archivo) {
+        try {
+            BasicFileAttributes attr = Files.readAttributes(archivo.toPath(), BasicFileAttributes.class);
+            return attr.creationTime().toString().substring(0, 10);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 

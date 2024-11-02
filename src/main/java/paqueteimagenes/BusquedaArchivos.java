@@ -106,7 +106,7 @@ public class BusquedaArchivos {
     }
 
     public void agregarMetadatosTabla(File archivo, DefaultTableModel modelo) {
-        Object[] fila = new Object[8]; // Aumenta el tamaño a 8 columnas
+        Object[] fila = new Object[8];
         fila[0] = archivo.getName();
         fila[1] = obtenerExtension(archivo);
         fila[2] = archivo.getAbsolutePath();
@@ -159,6 +159,11 @@ public class BusquedaArchivos {
     }
     
     public void buscarEnTabla(String terminoBusqueda, int columna, DefaultTableModel modelo) {
+        // Verificar si terminoBusqueda es null o está vacío
+        if (terminoBusqueda == null || terminoBusqueda.trim().isEmpty()) {
+            return; // No realizar la búsqueda si terminoBusqueda es null o vacío
+        }
+
         resultadosBusqueda.clear();
         modelo.setRowCount(0); // Limpiar el modelo de la tabla
 
@@ -169,8 +174,7 @@ public class BusquedaArchivos {
                 case 0: // Buscar por nombre
                     if (archivo.getName().toLowerCase().contains(terminoBusqueda.toLowerCase())) {
                         coincide = true;
-                    }
-                    break;
+                    } break;
                 case 3: // Buscar por fecha de creación
                     try {
                         Path path = archivo.toPath();
@@ -183,10 +187,8 @@ public class BusquedaArchivos {
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
-                    break;
-                default:
-                    break;
+                    } break;
+                default: break;
             }
 
             if (coincide) {

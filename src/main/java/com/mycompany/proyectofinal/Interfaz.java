@@ -24,7 +24,6 @@ import paqueteimagenes.VentanaInterfaz;
  */
 public class Interfaz extends JFrame{
     
-    //Atributos de la clase
     private JPanel panel;
     private JTextField ctRuta;
     private JButton btnAbrirInterfaz2,btnBuscarCarpeta,btnReproducir,btnPausa,btnDetener,btnVerLetra;
@@ -38,7 +37,6 @@ public class Interfaz extends JFrame{
     private JLabel lblEspacioArchivos;
     private GestorArchivos gestorArchivos;
     
-    //Constructor
     public Interfaz(){
         this.setSize(1100, 550);
         setTitle("Administrador multimedia");
@@ -51,7 +49,6 @@ public class Interfaz extends JFrame{
         iniciarComponentes();
     }
     
-    // Método para iniciar los componentes
     private void iniciarComponentes(){
         colocarPanel();
         colocarEtiquetas();
@@ -69,7 +66,6 @@ public class Interfaz extends JFrame{
         buscarArchivosRutaPredefinida();
     }
     
-    //Método para colocar el panel a la ventana
     private void colocarPanel(){
         panel = new JPanel();
         panel.setLayout(null);
@@ -77,7 +73,6 @@ public class Interfaz extends JFrame{
         this.getContentPane().add(panel);
     }
     
-    //Métodos gráficos
     private void colocarEtiquetas(){
         JLabel etiqueta1 = new JLabel("Administrador multimedia");
         etiqueta1.setBounds(425,15,230,20);
@@ -225,11 +220,9 @@ public class Interfaz extends JFrame{
 
             // Verificar la extensión del archivo
             if (rutaArchivo.endsWith(".mp4") || rutaArchivo.endsWith(".flv")) {
-                // Abrir el reproductor de video
                 VentanaReproductor ventanaReproductor = new VentanaReproductor(rutaArchivo);
                 ventanaReproductor.setVisible(true);
             } else {
-                // Reproducir el archivo de audio normalmente
                 reproductor.reproducir(rutaArchivo);
             }
         } else {
@@ -374,7 +367,6 @@ public class Interfaz extends JFrame{
                 busqueda.agregarMetadatosTabla(archivo, modelo);
             }
             
-            //Actualizar el label para mostrar el espacio ocupado por duplicados
             lblEspacioArchivos.setText("Duplicados: " + archivosDuplicados.size() + " | Espacio ocupado: " + espacioTotalDuplicados / (1024 * 1024) + " MB");
             actualizarEspacioTotal();
         }
@@ -385,20 +377,14 @@ public class Interfaz extends JFrame{
         if (filaSeleccionada != -1) {
             String rutaArchivo = obtenerRutaArchivoSeleccionado();
 
-            // Extraer la letra usando JAudioTagger
             String letra = ""; // Inicializa la variable para la letra
             try {
-                // Aquí debes usar JAudioTagger para obtener la letra
-                // Asegúrate de haber agregado JAudioTagger a tu proyecto
                 File archivo = new File(rutaArchivo);
-                // Extrae la letra del archivo de audio
-                // Suponiendo que tienes un método para obtener la letra
                 letra = Busqueda.obtenerLetra(archivo);
 
-                // Verifica si la letra está disponible
                 if (letra != null && !letra.isEmpty()) {
-                    VentanaLetra ventana = new VentanaLetra(letra); // Crea la ventana con la letra
-                    ventana.setVisible(true); // Abre la ventana con la letra
+                    VentanaLetra ventana = new VentanaLetra(letra);
+                    ventana.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "No se encontró la letra para esta canción");
                 }
@@ -446,7 +432,7 @@ public class Interfaz extends JFrame{
         double espacioTotal = 0;
 
         for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-            // Obtener el tamaño de cada archivo en la columna correspondiente (asumiendo que "Tamaño" es la columna 6)
+            // Obtener el tamaño de cada archivo en la columna correspondiente
             String tamañoStr = modeloTabla.getValueAt(i, 6).toString().trim(); // Eliminar espacios
 
             try {
@@ -471,7 +457,6 @@ public class Interfaz extends JFrame{
     }
     
     private void AbrirInterfazImagenes(){
-        // Crear una instancia de la otra interfaz y abrirla
         VentanaInterfaz vi = new VentanaInterfaz();
         vi.setVisible(true);
         this.dispose();

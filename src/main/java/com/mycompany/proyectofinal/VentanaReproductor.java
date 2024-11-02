@@ -1,10 +1,13 @@
 
 package com.mycompany.proyectofinal;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class VentanaReproductor extends JFrame {
     private Reproductor reproductor;
@@ -46,7 +49,6 @@ public class VentanaReproductor extends JFrame {
             }
         });
 
-        // Agregar los botones al panel de controles
         panelControles.add(btnReproducir);
         panelControles.add(btnPausar);
         panelControles.add(btnDetener);
@@ -55,7 +57,6 @@ public class VentanaReproductor extends JFrame {
         this.add(reproductor.getMediaPlayerComponent(), BorderLayout.CENTER);
         this.add(panelControles, BorderLayout.SOUTH);
 
-        // Hacer la ventana visible
         setVisible(true);
 
         // Reproducir el archivo después de que la ventana esté visible
@@ -73,6 +74,6 @@ public class VentanaReproductor extends JFrame {
     public void dispose() {
         // Detener la reproducción al cerrar la ventana
         reproductor.detener();
-        super.dispose(); // Llamar al método dispose de JFrame
+        super.dispose();
     }
 }

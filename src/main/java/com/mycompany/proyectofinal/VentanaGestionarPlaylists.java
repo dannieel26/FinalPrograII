@@ -33,7 +33,6 @@ public class VentanaGestionarPlaylists extends JFrame {
         tablaPlaylists = new JTable(new DefaultTableModel(new Object[]{"Nombre de Playlist"}, 0));
         modeloTabla = (DefaultTableModel) tablaPlaylists.getModel();
         
-        // Botón para crear playlist
         JButton btnCrearPlaylist = new JButton("Crear Playlist");
         btnCrearPlaylist.addActionListener(new ActionListener() {
             @Override
@@ -48,7 +47,6 @@ public class VentanaGestionarPlaylists extends JFrame {
             }
         });
 
-        // Botón para borrar playlist
         JButton btnBorrarPlaylist = new JButton("Borrar Playlist");
         btnBorrarPlaylist.addActionListener(new ActionListener() {
             @Override
@@ -62,7 +60,6 @@ public class VentanaGestionarPlaylists extends JFrame {
             }
         });
         
-        // Botón para abrir una playlist
         JButton btnAbrirPlaylist = new JButton("Abrir Playlist");
         btnAbrirPlaylist.addActionListener(new ActionListener() {
             @Override
@@ -85,14 +82,12 @@ public class VentanaGestionarPlaylists extends JFrame {
             }
         });
             
-        // Panel de botones
         JPanel panelBotones = new JPanel();
         panelBotones.add(btnCrearPlaylist);
         panelBotones.add(btnBorrarPlaylist);
         //panelBotones.add(btnEnviarAInterfaz);
         panelBotones.add(btnAbrirPlaylist);
 
-        // Configurar el layout
         setLayout(new BorderLayout());
         add(new JScrollPane(tablaPlaylists), BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);

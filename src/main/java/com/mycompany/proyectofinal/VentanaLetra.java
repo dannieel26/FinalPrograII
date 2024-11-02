@@ -16,13 +16,12 @@ public class VentanaLetra extends JFrame {
     public VentanaLetra(String letra) {
         setTitle("Letra de la Canción");
         setSize(600, 700);
-        setLocationRelativeTo(null); // Centra la ventana en la pantalla
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
-        // Panel de fondo gris oscuro
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
-        panel.setBackground(new Color(1, 50, 32)); // Color de fondo oscuro
+        panel.setBackground(new Color(1, 50, 32));
 
         // JTextPane para mostrar la letra y permitir centrado
         JTextPane textPane = new JTextPane();
@@ -38,7 +37,6 @@ public class VentanaLetra extends JFrame {
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
 
-        // Crear un JScrollPane para el JTextPane
         JScrollPane scrollPane = new JScrollPane(textPane);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // Siempre mostrar la barra de desplazamiento vertical
         
