@@ -188,6 +188,7 @@ public class VentanaInterfaz extends JFrame {
         btnEliminarArchivo.addActionListener(e -> eliminarArchivoSeleccionado());
         btnVerMasGrandes.addActionListener(e -> mostrarArchivosMasGrandes());
         comboBoxBuscar.addActionListener(e -> realizarBusqueda());
+        btnMoverArchivo.addActionListener(e -> moverArchivoSeleccionado());
     }
     
     private void abrirDialogoYBuscarImagenes() {
@@ -370,6 +371,51 @@ public class VentanaInterfaz extends JFrame {
             }
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un archivo de la tabla para eliminar.");
+        }
+    }
+    
+    private void moverArchivoSeleccionado() {
+        int filaSeleccionada = tablaArchivos.getSelectedRow();
+
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un archivo de la tabla para mover.");
+            return;
+        }
+
+        String rutaArchivo = tablaArchivos.getValueAt(filaSeleccionada, 2).toString();
+        File archivoSeleccionado = new File(rutaArchivo);
+
+        if (!archivoSeleccionado.exists()) {
+            JOptionPane.showMessageDialog(this, "El archivo seleccionado no existe.");
+            return;
+        }
+
+        // Crear y configurar JFileChooser para seleccionar la carpeta destino
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setDialogTitle("Seleccione la carpeta de destino");
+
+        int seleccion = fileChooser.showOpenDialog(this);
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            File carpetaDestino = fileChooser.getSelectedFile();
+            File nuevoArchivo = new File(carpetaDestino, archivoSeleccionado.getName());
+
+            try {
+                Files.move(archivoSeleccionado.toPath(), nuevoArchivo.toPath());
+                JOptionPane.showMessageDialog(this, "Archivo movido con éxito a: " + carpetaDestino.getAbsolutePath());
+                actualizarTablaDespuesDeMovimiento();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error al mover el archivo: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private void actualizarTablaDespuesDeMovimiento() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
+        int filaSeleccionada = tablaArchivos.getSelectedRow();
+        if (filaSeleccionada != -1) {
+            modeloTabla.removeRow(filaSeleccionada); // Eliminar la fila del archivo movido
         }
     }
 
