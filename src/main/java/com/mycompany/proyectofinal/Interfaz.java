@@ -101,26 +101,26 @@ public class Interfaz extends JFrame{
         panel.add(btnBuscarCarpeta);
         
         btnReproducir = new JButton("Reproducir");
-        btnReproducir.setBounds(35, 390, 110, 40);
+        btnReproducir.setBounds(35, 430, 110, 40);
         btnReproducir.setBackground(new Color(2,63,64));
         btnReproducir.setForeground(Color.WHITE);
         panel.add(btnReproducir);
         
         btnPausa = new JButton("Pausa");
-        btnPausa.setBounds(160, 390, 110, 40);
+        btnPausa.setBounds(160, 430, 110, 40);
         btnPausa.setBackground(new Color(2,63,64));
         btnPausa.setForeground(Color.WHITE);
         panel.add(btnPausa);
         
         btnDetener = new JButton("Detener");
-        btnDetener.setBounds(285, 390, 110, 40);
+        btnDetener.setBounds(285, 430, 110, 40);
         btnDetener.setBackground(new Color(2,63,64));
         btnDetener.setForeground(Color.WHITE);
 
         panel.add(btnDetener);
         
         btnVerLetra = new JButton("Ver letra");
-        btnVerLetra.setBounds(410, 390, 110, 40);
+        btnVerLetra.setBounds(410, 430, 110, 40);
         btnVerLetra.setBackground(new Color(0,130,132));
         btnVerLetra.setForeground(Color.WHITE);
         panel.add(btnVerLetra);
@@ -132,7 +132,7 @@ public class Interfaz extends JFrame{
         tablaArchivos = new JTable(modeloTabla);
         
         scrollTabla = new JScrollPane (tablaArchivos);
-        scrollTabla.setBounds(35, 120, 1010, 240);
+        scrollTabla.setBounds(35, 110, 1010, 280);
         panel.add(scrollTabla);
     }
     
@@ -149,7 +149,7 @@ public class Interfaz extends JFrame{
     
     private void colocarEtiquetaEspacioTotal(){
         lblEspacioArchivos = new JLabel("Espacio total ocupado: 0 MB");
-        lblEspacioArchivos.setBounds(35, 360, 300, 20);
+        lblEspacioArchivos.setBounds(35, 400, 300, 20);
         panel.add(lblEspacioArchivos);
     }
     
@@ -158,7 +158,7 @@ public class Interfaz extends JFrame{
         comboBoxPlaylists.addItem("Opciones playlist");
         comboBoxPlaylists.addItem("Agregar a playlist");
         comboBoxPlaylists.addItem("Gestionar Playlists");
-        comboBoxPlaylists.setBounds(535,390,120,40);
+        comboBoxPlaylists.setBounds(535,430,120,40);
         comboBoxPlaylists.setForeground(Color.WHITE);
         comboBoxPlaylists.setBackground(new Color(0,130,132));
         panel.add(comboBoxPlaylists);
@@ -170,7 +170,7 @@ public class Interfaz extends JFrame{
         comboBoxBuscar.addItem("Álbum");
         comboBoxBuscar.setBackground(new Color(2,63,64));
         comboBoxBuscar.setForeground(Color.WHITE);
-        comboBoxBuscar.setBounds(670, 390, 110, 40);
+        comboBoxBuscar.setBounds(670, 430, 110, 40);
         panel.add(comboBoxBuscar);
         
         comboBoxOrdenar = new JComboBox<>();
@@ -180,7 +180,7 @@ public class Interfaz extends JFrame{
         comboBoxOrdenar.addItem("Genero");
         comboBoxOrdenar.addItem("Año");
         comboBoxOrdenar.addItem("Duración");
-        comboBoxOrdenar.setBounds(795, 390, 105, 40);
+        comboBoxOrdenar.setBounds(795, 430, 105, 40);
         comboBoxOrdenar.setBackground(new Color(2,63,64));
         comboBoxOrdenar.setForeground(Color.WHITE);
         panel.add(comboBoxOrdenar);
@@ -191,7 +191,7 @@ public class Interfaz extends JFrame{
         opcionesComboBox.addItem("Ver más grandes");
         opcionesComboBox.addItem("Eliminar archivo(s)");
         opcionesComboBox.addItem("Mover archivo(s)");
-        opcionesComboBox.setBounds(915, 390, 135, 40);
+        opcionesComboBox.setBounds(915, 430, 135, 40);
         opcionesComboBox.setBackground(new Color(2,63,64));
         opcionesComboBox.setForeground(Color.WHITE);
         panel.add(opcionesComboBox);
@@ -199,7 +199,6 @@ public class Interfaz extends JFrame{
     
     private void agregarEventos(){
         Eventos eventos = new Eventos(fileChooser, ctRuta, busqueda, rutas, lblEspacioArchivos);
-        //Agregar evento del botón
         btnBuscarCarpeta.addActionListener(eventos);
         btnReproducir.addActionListener(e -> reproducirArchivo());
         btnPausa.addActionListener(e -> reproductor.pausar());
@@ -231,7 +230,6 @@ public class Interfaz extends JFrame{
     }
     
     public void abrirReproductorDeVideo(String archivo) {
-        // Crear y mostrar la ventana del reproductor de video
         VentanaReproductor ventanaReproductor = new VentanaReproductor(archivo);
         ventanaReproductor.setVisible(true);
     }
@@ -285,7 +283,7 @@ public class Interfaz extends JFrame{
         }
     }
     
-     private void manejarComboBoxOrdenar() {
+    private void manejarComboBoxOrdenar() {
         String opcionSeleccionada = (String) comboBoxOrdenar.getSelectedItem();
         DefaultTableModel modeloTabla = (DefaultTableModel) tablaArchivos.getModel();
 
@@ -314,7 +312,6 @@ public class Interfaz extends JFrame{
         }
     }
     
-    // Método para mostrar las canciones de una playlist en la tabla
     public void mostrarPlaylistEnTabla(List<File> cancionesPlaylist) {
         vaciarTabla();  // Limpiar la tabla antes de mostrar la playlist
         lblEspacioArchivos.setText("");
@@ -324,7 +321,6 @@ public class Interfaz extends JFrame{
         }
     }
 
-    // Método para obtener el nombre del archivo seleccionado en la tabla
     public String obtenerNombreArchivoSeleccionado() {
         int filaSeleccionada = obtenerFilaSeleccionada();
         if (filaSeleccionada != -1) {
@@ -335,13 +331,11 @@ public class Interfaz extends JFrame{
         }
     }
     
-    // Método para obtener la ruta del archivo seleccionado como String
     private String obtenerRutaArchivoSeleccionado() {
         File archivo = obtenerArchivoSeleccionado();
         return archivo != null ? archivo.getPath() : null;
 }
 
-    // Método para obtener el archivo seleccionado como File
     private File obtenerArchivoSeleccionado() {
         int filaSeleccionada = obtenerFilaSeleccionada();
         if (filaSeleccionada != -1) { // Verifica si hay una fila seleccionada
@@ -397,13 +391,13 @@ public class Interfaz extends JFrame{
                     VentanaLetra ventana = new VentanaLetra(letra); // Crea la ventana con la letra
                     ventana.setVisible(true); // Abre la ventana con la letra
                 } else {
-                    JOptionPane.showMessageDialog(this, "No se encontró la letra para esta canción.");
+                    JOptionPane.showMessageDialog(this, "No se encontró la letra para esta canción");
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error al obtener la letra: " + e.getMessage());
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Selecciona un archivo para ver la letra.");
+            JOptionPane.showMessageDialog(this, "Selecciona un archivo para ver la letra");
         }    
     }
     

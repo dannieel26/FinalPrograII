@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +56,7 @@ public class Busqueda {
             genero,
             año,
             duracion,
-            archivo.length() / (1024 * 1024) + " MB",
+            obtenerTamañoEnMB(archivo),
             archivo.getName().substring(archivo.getName().lastIndexOf('.') + 1),
             archivo.getAbsolutePath()
         });
@@ -128,6 +129,11 @@ public class Busqueda {
         }
     }
 
+    public static String obtenerTamañoEnMB(File archivo) {
+        DecimalFormat formato = new DecimalFormat("#.0");
+        double tamañoEnMB = archivo.length() / (1024.0 * 1024.0);
+        return formato.format(tamañoEnMB) + " MB";
+    }
     
     private long buscarArchivos(File carpeta){
     long espacioTotal = 0;
