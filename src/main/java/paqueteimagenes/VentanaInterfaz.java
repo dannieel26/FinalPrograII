@@ -186,6 +186,7 @@ public class VentanaInterfaz extends JFrame {
         btnVerDuplicados.addActionListener(e -> mostrarDuplicados());
         btnMostrarEspacio.addActionListener(e -> actualizarEspacioTotal());
         btnEliminarArchivo.addActionListener(e -> eliminarArchivoSeleccionado());
+        btnVerMasGrandes.addActionListener(e -> mostrarArchivosMasGrandes());
     }
     
     private void abrirDialogoYBuscarImagenes() {
@@ -306,6 +307,16 @@ public class VentanaInterfaz extends JFrame {
             // Actualizar la tabla para mostrar el espacio ocupado por duplicados
             lblEspacioArchivos.setText("Duplicados: " + archivosDuplicadosMap.values().stream().mapToInt(List::size).sum() + 
                                         " | Espacio ocupado: " + espacioTotalDuplicados / (1024 * 1024) + " MB");
+        }
+    }
+    
+    public void mostrarArchivosMasGrandes() {
+        List<File> archivosMasGrandes = busquedaArchivos.obtenerArchivosMasGrandes(15);
+        DefaultTableModel modelo = (DefaultTableModel) tablaArchivos.getModel(); // Asegúrate de tener la referencia correcta a tu tabla
+        modelo.setRowCount(0); // Limpia la tabla antes de agregar nuevos datos
+
+        for (File archivo : archivosMasGrandes) {
+            busquedaArchivos.agregarMetadatosTabla(archivo, modelo); // Usa tu método existente para agregar metadatos
         }
     }
     

@@ -19,7 +19,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -70,7 +69,6 @@ public class BusquedaArchivos {
         return listaArchivosImagen.stream().mapToLong(File::length).sum();
     }
     
-    // Método para buscar archivos duplicados
     public Map<String, List<File>> buscarDuplicados() {
         Map<String, List<File>> duplicados = new HashMap<>();
 
@@ -89,7 +87,6 @@ public class BusquedaArchivos {
         return duplicados;
     }
 
-    // Método para calcular el hash de un archivo
     private String calcularHashArchivo(File archivo) throws IOException, NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         try (FileInputStream fis = new FileInputStream(archivo)) {
@@ -152,5 +149,11 @@ public class BusquedaArchivos {
         }
 
         modelo.addRow(fila); // Agrega la fila al modelo de la tabla
+    }
+    
+    public List<File> obtenerArchivosMasGrandes(int limite) {
+        // Ordenar la lista de archivos en función de su tamaño
+        listaArchivosImagen.sort((f1, f2) -> Long.compare(f2.length(), f1.length())); // Ordenar de mayor a menor
+        return listaArchivosImagen.subList(0, Math.min(limite, listaArchivosImagen.size())); // Devuelve hasta 'limite' archivos
     }
 }
