@@ -204,6 +204,7 @@ public class Interfaz extends JFrame{
         btnReproducir.addActionListener(e -> reproducirArchivo());
         btnPausa.addActionListener(e -> reproductor.pausar());
         btnDetener.addActionListener(e -> reproductor.detener());
+        btnVerLetra.addActionListener(e -> mostrarLetra());
     }
     
     private int obtenerFilaSeleccionada() {
@@ -374,6 +375,36 @@ public class Interfaz extends JFrame{
             //Actualizar el label para mostrar el espacio ocupado por duplicados
             lblEspacioArchivos.setText("Duplicados: " + archivosDuplicados.size() + " | Espacio ocupado: " + espacioTotalDuplicados / (1024 * 1024) + " MB");
         }
+    }
+    
+    private void mostrarLetra() {
+        int filaSeleccionada = obtenerFilaSeleccionada();
+        if (filaSeleccionada != -1) {
+            String rutaArchivo = obtenerRutaArchivoSeleccionado();
+
+            // Extraer la letra usando JAudioTagger
+            String letra = ""; // Inicializa la variable para la letra
+            try {
+                // Aquí debes usar JAudioTagger para obtener la letra
+                // Asegúrate de haber agregado JAudioTagger a tu proyecto
+                File archivo = new File(rutaArchivo);
+                // Extrae la letra del archivo de audio
+                // Suponiendo que tienes un método para obtener la letra
+                letra = Busqueda.obtenerLetra(archivo);
+
+                // Verifica si la letra está disponible
+                if (letra != null && !letra.isEmpty()) {
+                    VentanaLetra ventana = new VentanaLetra(letra); // Crea la ventana con la letra
+                    ventana.setVisible(true); // Abre la ventana con la letra
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se encontró la letra para esta canción.");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al obtener la letra: " + e.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecciona un archivo para ver la letra.");
+        }    
     }
     
     private void eliminarArchivoSeleccionado(){

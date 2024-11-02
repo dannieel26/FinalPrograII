@@ -68,4 +68,11 @@ public class VentanaReproductor extends JFrame {
             reproductor.reproducir(rutaArchivo);
         });
     }
+    
+    @Override
+    public void dispose() {
+        // Detener la reproducción al cerrar la ventana
+        reproductor.detener();
+        super.dispose(); // Llamar al método dispose de JFrame
+    }
 }

@@ -249,4 +249,15 @@ public class Busqueda {
             tablaArchivos.setModel(modeloFiltrado);
         }
     }
+    
+    public static String obtenerLetra(File archivo) {
+        try {
+            AudioFile audioFile = AudioFileIO.read(archivo);
+            Tag tag = audioFile.getTag();
+            return tag.getFirst(FieldKey.LYRICS); // Extrae la letra
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // En caso de error, retorna null
+        }
+    }
 }
